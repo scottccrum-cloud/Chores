@@ -1,248 +1,283 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" data-theme="light">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-  <title>Parent Control Dashboard</title>
-  <link href="https://api.fontshare.com/v2/css?f[]=satoshi@400,500,700,800&display=swap" rel="stylesheet">
-  <style>
-    :root {
-      --font: 'Satoshi', -apple-system, sans-serif;
-      --bg: #0f141c;
-      --sur: #1a2035;
-      --sur2: #121726;
-      --brd: #2d3748;
-      --div: rgba(255, 255, 255, 0.08);
-      --tx: #f3f4f6;
-      --txm: #9ca3af;
-      
-      /* Kid Colors */
-      --ethan: #3b82f6; /* Tech Blue */
-      --jacob: #10b981; /* Neon Green */
-      --mia: #ec4899;   /* Neon Pink */
-    }
-
-    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
-    body {
-      font-family: var(--font);
-      background: var(--bg);
-      color: var(--tx);
-      min-height: 100dvh;
-      padding-bottom: 40px;
-    }
-
-    .hdr {
-      position: sticky;
-      top: 0;
-      z-index: 100;
-      background: var(--sur);
-      border-bottom: 1px solid var(--brd);
-      padding: 20px;
-    }
-    .hdr-title {
-      font-size: 1.6rem;
-      font-weight: 800;
-      background: linear-gradient(45deg, #a855f7, #ec4899);
-      -webkit-background-clip: text;
-      -webkit-text-fill-color: transparent;
-      text-transform: uppercase;
-    }
-    .hdr-sub { font-size: 0.85rem; color: var(--txm); }
-
-    .day-strip {
-      display: flex;
-      gap: 10px;
-      padding: 15px 20px;
-      overflow-x: auto;
-    }
-    .daychip {
-      flex: 1;
-      min-width: 50px;
-      padding: 10px;
-      border-radius: 10px;
-      font-size: 0.85rem;
-      font-weight: 700;
-      background: var(--sur2);
-      border: 2px solid var(--brd);
-      color: var(--txm);
-      transition: all 0.2s ease;
-    }
-    .daychip.sel {
-      background: #a855f7;
-      border-color: #a855f7;
-      color: #fff;
-      transform: scale(1.05);
-    }
-
-    .content { padding: 0 20px; display: flex; flex-direction: column; gap: 25px; }
-    
-    .kid-section {
-      background: var(--sur);
-      border-radius: 16px;
-      overflow: hidden;
-      border: 1px solid var(--brd);
-    }
-    
-    .kid-hdr {
-      padding: 15px 20px;
-      font-weight: 800;
-      font-size: 1.1rem;
-      text-transform: uppercase;
-      border-bottom: 1px solid var(--brd);
-      background: rgba(255,255,255,0.02);
-    }
-    
-    .k-ethan .kid-hdr { color: var(--ethan); border-left: 5px solid var(--ethan); }
-    .k-jacob .kid-hdr { color: var(--jacob); border-left: 5px solid var(--jacob); }
-    .k-mia .kid-hdr { color: var(--mia); border-left: 5px solid var(--mia); }
-
-    .citem {
-      display: flex;
-      align-items: center;
-      padding: 15px 20px;
-      border-bottom: 1px solid var(--div);
-    }
-    .citem:last-child { border-bottom: none; }
-    .cinfo { flex: 1; }
-    .cname { font-size: 1rem; font-weight: 500; }
-    
-    /* Indicator Lights */
-    .status-light {
-      width: 45px;
-      padding: 6px 0;
-      text-align: center;
-      border-radius: 20px;
-      font-size: 0.75rem;
-      font-weight: 700;
-      text-transform: uppercase;
-      background: #242b3d;
-      color: var(--txm);
-      transition: all 0.2s ease;
-    }
-    
-    .k-ethan .status-light.active { background: var(--ethan); color: #fff; box-shadow: 0 0 10px rgba(59, 130, 246, 0.4); }
-    .k-jacob .status-light.active { background: var(--jacob); color: #fff; box-shadow: 0 0 10px rgba(16, 185, 129, 0.4); }
-    .k-mia .status-light.active { background: var(--mia); color: #fff; box-shadow: 0 0 10px rgba(236, 72, 153, 0.4); }
-  </style>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<title>Parent Dashboard</title>
+<link href="https://api.fontshare.com/v2/css?f[]=satoshi@400,500,700&display=swap" rel="stylesheet">
+<style>
+:root{--f:Satoshi,-apple-system,sans-serif;--xs:.75rem;--sm:.9rem;--bs:1rem;--lg:1.2rem;--xl:1.6rem;--2xl:2rem;--rl:.75rem;--rx:1rem;--rf:9999px}
+[data-theme=light]{--bg:#f6f5f1;--su:#fff;--s2:#f4f3ef;--bd:rgba(0,0,0,.1);--dv:rgba(0,0,0,.07);--tx:#1a1a18;--tm:#6b6a67;--rd:#C00000;--sp:#375623;--pur:#5C2D91}
+[data-theme=dark]{--bg:#141413;--su:#1c1b19;--s2:#222120;--bd:rgba(255,255,255,.1);--dv:rgba(255,255,255,.06);--tx:#e0dfdc;--tm:#8a8986;--rd:#e05555;--sp:#6daa45;--pur:#9b5cd4}
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+html{-webkit-text-size-adjust:none;scroll-behavior:smooth}
+body{font-family:var(--f);background:var(--bg);color:var(--tx);min-height:100dvh;padding-bottom:80px;-webkit-tap-highlight-color:transparent}
+button,a{cursor:pointer;font:inherit;border:none;background:none;color:inherit;text-decoration:none}
+.hdr{position:sticky;top:0;z-index:100;background:var(--su);border-bottom:1px solid var(--dv);padding:.75rem 1rem;display:flex;align-items:center;gap:.75rem;box-shadow:0 1px 3px rgba(0,0,0,.06)}
+.back-btn{width:38px;height:38px;border-radius:var(--rf);display:flex;align-items:center;justify-content:center;background:var(--s2);border:1px solid var(--bd);font-size:1rem;flex-shrink:0}
+.hdr-mid{flex:1}
+.hdr-name{font-size:var(--lg);font-weight:700}
+.hdr-sub{font-size:var(--xs);color:var(--tm)}
+.hdr-r{display:flex;align-items:center;gap:.4rem}
+.ibtn{width:38px;height:38px;border-radius:var(--rf);display:flex;align-items:center;justify-content:center;background:var(--s2);border:1px solid var(--bd);font-size:1rem}
+.syn{width:8px;height:8px;border-radius:50%;background:#aaa;display:inline-block}
+.syn.ok{background:#22c55e}.syn.er{background:var(--rd)}.syn.bz{background:#d4a820;animation:pls .8s infinite}
+@keyframes pls{0%,100%{opacity:1}50%{opacity:.4}}
+/* Tabs */
+.tabs{display:flex;background:var(--su);border-bottom:1px solid var(--dv);overflow-x:auto;scrollbar-width:none}
+.tabs::-webkit-scrollbar{display:none}
+.tab{flex:1;min-width:80px;padding:.65rem .5rem;font-size:var(--xs);font-weight:700;text-align:center;color:var(--tm);border-bottom:2.5px solid transparent;white-space:nowrap;transition:all .15s}
+.tab.act{color:var(--tx);border-bottom-color:var(--tx)}
+.tab-panel{display:none;padding:1rem;max-width:700px;margin:0 auto}
+.tab-panel.act{display:block}
+/* Overview */
+.kid-card{background:var(--su);border-radius:var(--rx);border:1px solid var(--bd);overflow:hidden;margin-bottom:1rem;box-shadow:0 1px 4px rgba(0,0,0,.06)}
+.kid-card-top{height:4px}
+.kid-card-body{padding:1rem}
+.kid-row{display:flex;align-items:center;gap:.75rem;margin-bottom:.75rem}
+.kid-avatar{width:44px;height:44px;border-radius:var(--rf);display:flex;align-items:center;justify-content:center;font-size:1.3rem;font-weight:700;color:#fff;flex-shrink:0}
+.kid-info{flex:1}
+.kid-name{font-size:var(--lg);font-weight:700}
+.kid-score{font-size:var(--xl);font-weight:700}
+.kid-bar-wrap{height:8px;border-radius:var(--rf);background:var(--s2);overflow:hidden;margin-bottom:.5rem}
+.kid-bar-fill{height:100%;border-radius:var(--rf);transition:width .5s ease}
+/* Day grid in kid card */
+.day-grid{display:grid;grid-template-columns:repeat(7,1fr);gap:3px;margin-top:.5rem}
+.dg-col{text-align:center}
+.dg-label{font-size:.6rem;font-weight:700;color:var(--tm);margin-bottom:3px}
+.dg-val{font-size:.65rem;font-weight:600;padding:3px 2px;border-radius:.3rem;background:var(--s2)}
+.dg-val.has{color:#196B24;background:#e2f0d9}
+/* Leaderboard */
+.lboard{background:var(--su);border-radius:var(--rx);border:1px solid var(--bd);overflow:hidden;margin-bottom:1rem}
+.lb-row{display:flex;align-items:center;gap:.75rem;padding:.75rem 1rem;border-bottom:1px solid var(--dv)}
+.lb-row:last-child{border-bottom:none}
+.lb-rank{width:30px;height:30px;border-radius:var(--rf);display:flex;align-items:center;justify-content:center;font-size:.9rem;font-weight:700;flex-shrink:0}
+.lb-r1{background:#FFD700;color:#333}.lb-r2{background:#C0C0C0;color:#333}.lb-r3{background:#CD7F32;color:#fff}
+.lb-name{flex:1;font-weight:600}
+.lb-bar-wrap{flex:2;height:6px;border-radius:var(--rf);background:var(--s2);overflow:hidden;max-width:100px}
+.lb-bar-fill{height:100%;border-radius:var(--rf)}
+.lb-pts{font-weight:700;min-width:56px;text-align:right}
+/* Chore table */
+.ctable{width:100%;border-collapse:collapse;font-size:var(--xs)}
+.ctable th{text-align:left;padding:5px 6px;border-bottom:2px solid var(--dv);color:var(--tm);font-weight:700}
+.ctable th.day{text-align:center;min-width:28px}
+.ctable td{padding:4px 6px;border-bottom:1px solid var(--dv)}
+.ctable td.day{text-align:center}
+.ctable tr:last-child td{border-bottom:none}
+.ck{color:#196B24;font-weight:700}
+.cx{color:var(--tm)}
+.section-row td{background:var(--s2);font-weight:700;color:var(--tm);padding:5px 6px}
+/* Rewards panel */
+.rew-grid{display:grid;grid-template-columns:1fr 1fr;gap:.75rem;margin-bottom:1rem}
+.rew-card{background:var(--su);border-radius:var(--rx);border:1px solid var(--bd);padding:.75rem;overflow:hidden}
+.rew-card-top{height:3px;margin:-12px -12px 10px;border-radius:.4rem .4rem 0 0}
+.rew-card-icon{font-size:1.5rem;margin-bottom:.4rem}
+.rew-card-name{font-size:var(--sm);font-weight:700;margin-bottom:.5rem}
+.rew-kids{display:flex;flex-direction:column;gap:4px}
+.rew-kid-row{display:flex;align-items:center;justify-content:space-between;font-size:var(--xs)}
+.rew-badge{font-size:var(--xs);font-weight:700;padding:2px 6px;border-radius:var(--rf)}
+.rew-badge.yes{background:#e2f0d9;color:#196B24}
+.rew-badge.no{background:var(--s2);color:var(--tm)}
+/* Penalty controls in parent */
+.pen-panel{background:var(--su);border-radius:var(--rx);border:1px solid var(--bd);overflow:hidden;margin-bottom:1rem}
+.pen-panel-hdr{padding:.65rem 1rem;background:var(--rd);color:#fff;font-weight:700;font-size:var(--sm)}
+.pen-kid-row{display:flex;align-items:center;gap:.75rem;padding:.75rem 1rem;border-bottom:1px solid var(--dv)}
+.pen-kid-row:last-child{border-bottom:none}
+.pen-kid-name{flex:1;font-weight:600}
+.pen-ctrl{display:flex;align-items:center;gap:.6rem}
+.pen-btn{width:34px;height:34px;border-radius:var(--rf);font-size:1.1rem;font-weight:700;display:flex;align-items:center;justify-content:center;border:2px solid var(--bd);background:var(--s2)}
+.pen-btn.m{border-color:var(--rd);color:var(--rd)}
+.pen-btn.p{border-color:var(--sp);color:var(--sp)}
+.pen-num{font-size:var(--lg);font-weight:700;color:var(--rd);min-width:28px;text-align:center}
+.pen-total{font-size:var(--xs);color:var(--rd)}
+/* Sec title */
+.sec-title{font-size:var(--xs);font-weight:700;color:var(--tm);text-transform:uppercase;letter-spacing:.05em;margin-bottom:.75rem}
+</style>
 </head>
 <body>
-
-  <div class="hdr">
-    <div class="hdr-title">Parent Command Center</div>
-    <div class="hdr-sub">Real-Time Chore Monitor</div>
+<header class="hdr">
+  <a class="back-btn" href="index.html">&#8592;</a>
+  <div class="hdr-mid">
+    <div class="hdr-name">🔒 Parent Dashboard</div>
+    <div class="hdr-sub" id="wkLbl">Loading…</div>
   </div>
-
-  <div class="day-strip">
-    <button class="daychip sel">Mon</button>
-    <button class="daychip">Tue</button>
-    <button class="daychip">Wed</button>
-    <button class="daychip">Thu</button>
-    <button class="daychip">Fri</button>
-    <button class="daychip">Sat</button>
-    <button class="daychip">Sun</button>
+  <div class="hdr-r">
+    <span class="syn" id="syncDot"></span>
+    <button class="ibtn" id="themeBtn">🌙</button>
   </div>
+</header>
 
-  <div class="content">
+<nav class="tabs">
+  <button class="tab act" onclick="showTab('overview')">Overview</button>
+  <button class="tab" onclick="showTab('jacob')">Jacob</button>
+  <button class="tab" onclick="showTab('ethan')">Ethan</button>
+  <button class="tab" onclick="showTab('mia')">Mia</button>
+  <button class="tab" onclick="showTab('rewards')">Rewards</button>
+  <button class="tab" onclick="showTab('penalty')">Penalties</button>
+</nav>
 
-    <div class="kid-section k-ethan">
-      <div class="kid-hdr">Ethan</div>
-      <div class="citem">
-        <div class="cinfo"><div class="cname">Wipe down kitchen counters</div></div>
-        <div class="status-light" id="ethan_0">Open</div>
-      </div>
-    </div>
+<div id="tab-overview" class="tab-panel act"></div>
+<div id="tab-jacob" class="tab-panel"></div>
+<div id="tab-ethan" class="tab-panel"></div>
+<div id="tab-mia" class="tab-panel"></div>
+<div id="tab-rewards" class="tab-panel"></div>
+<div id="tab-penalty" class="tab-panel"></div>
 
-    <div class="kid-section k-jacob">
-      <div class="kid-hdr">Jacob</div>
-      <div class="citem">
-        <div class="cinfo"><div class="cname">Feed the pets & fresh water</div></div>
-        <div class="status-light" id="jacob_0">Open</div>
-      </div>
-      <div class="citem">
-        <div class="cinfo"><div class="cname">Trash cans out to the curb</div></div>
-        <div class="status-light" id="jacob_1">Open</div>
-      </div>
-    </div>
+<script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-database-compat.js"></script>
+<script>
+firebase.initializeApp({apiKey:"AIzaSyD1tuzNLZOcirHiWIORiD0lyvCnWQbdJMM",authDomain:"chore-chart-2026.firebaseapp.com",databaseURL:"https://chore-chart-2026-default-rtdb.firebaseio.com",projectId:"chore-chart-2026",storageBucket:"chore-chart-2026.firebasestorage.app",messagingSenderId:"648704780405",appId:"1:648704780405:web:246dc2cf5301085469b03c"});
+const db=firebase.database();
 
-    <div class="kid-section k-mia">
-      <div class="kid-hdr">Mia</div>
-      <div class="citem">
-        <div class="cinfo"><div class="cname">Empty the dishwasher</div></div>
-        <div class="status-light" id="mia_0">Open</div>
-      </div>
-    </div>
+const KIDS=[
+  {key:"jacob",name:"Jacob",color:"#1a6ea8",emoji:"J"},
+  {key:"ethan",name:"Ethan",color:"#196B24",emoji:"E"},
+  {key:"mia",  name:"Mia",  color:"#9E480E",emoji:"M"}
+];
+const DAYS=["Mon","Tue","Wed","Thu","Fri","Sat","Sun"];
+const DAILY=[{id:"ct",name:"Clean Toilets",pts:5},{id:"dg",name:"Dog Food & Water",pts:5},{id:"sh",name:"Shower",pts:5},{id:"wu",name:"Wake Up on Time",pts:5},{id:"bd",name:"Make Bed",pts:5}];
+const SPEC=[{id:"sl",name:"Sweep Living Room",pts:10},{id:"st",name:"Sweep Stairs",pts:10},{id:"sk",name:"Sweep Kitchen",pts:10},{id:"di",name:"Dishes",pts:20},{id:"ck",name:"Cook/Prep Meal",pts:20},{id:"ws",name:"Wash Clothes",pts:15},{id:"dr",name:"Dry Clothes",pts:10}];
+const WEEKLY=[{id:"gr",name:"Cut Grass",pts:25},{id:"tr",name:"Take Out Trash",pts:25}];
+const DASH=[{id:"dd",name:"DoorDash/Uber Eats",pts:50}];
+const ALL=DAILY.concat(SPEC).concat(WEEKLY).concat(DASH);
+const REWARDS=[{icon:"🎮",name:"Xbox 1 Hour",pts:50},{icon:"📶",name:"WiFi Password",pts:50},{icon:"🎉",name:"Go Out with Friends",pts:250},{icon:"💵",name:"Cash $25",pts:500},{icon:"💵",name:"Cash $50",pts:1501},{icon:"💵",name:"Cash $75",pts:5001},{icon:"💵",name:"Cash $100",pts:7501}];
 
-  </div>
+function getWeekKey(){const t=new Date(),yr=t.getFullYear(),j=new Date(yr,0,1),w=Math.ceil(((t-j)/86400000+j.getDay()+1)/7);return yr+"_W"+String(w).padStart(2,"0");}
+function getWeekLabel(){const t=new Date(),yr=t.getFullYear(),j=new Date(yr,0,1),w=Math.ceil(((t-j)/86400000+j.getDay()+1)/7),m=new Date(j.getTime()+(w-1)*7*86400000),s=new Date(m.getTime()+6*86400000),f=d=>d.toLocaleDateString("en-US",{month:"short",day:"numeric"});return f(m)+" – "+f(s);}
+function calcScore(data){if(!data)return 0;let t=0;DAYS.forEach(day=>{const dc=data[day]||{};ALL.forEach(ch=>{if(dc[ch.id])t+=ch.pts;});});return t-(data.penalties||0)*15;}
+function getDayScore(data,dayIdx){const dc=(data&&data[DAYS[dayIdx]])||{};let t=0;ALL.forEach(ch=>{if(dc[ch.id])t+=ch.pts;});return t;}
 
-  <script type="module">
-    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.0.0/firebase-app.js";
-    import { getDatabase, ref, onValue } from "https://www.gstatic.com/firebasejs/10.0.0/firebase-database.js";
+const wk=getWeekKey();
+document.getElementById("wkLbl").textContent="Week: "+getWeekLabel();
+const syncDot=document.getElementById("syncDot");
+syncDot.className="syn bz";
 
-    const firebaseConfig = {
-      apiKey: "AIzaSyD1tuzNLZOcirHiWIORiD0lyvCnWQbdJMM",
-      authDomain: "chore-chart-2026.firebaseapp.com",
-      databaseURL: "https://chore-chart-2026-default-rtdb.firebaseio.com/",
-      projectId: "chore-chart-2026",
-      storageBucket: "chore-chart-2026.firebasestorage.app",
-      messagingSenderId: "648704780405",
-      appId: "1:648704780405:web:246dc2cf5301085469b03c"
-    };
+const allData={};
+KIDS.forEach(k=>{allData[k.key]={};});
 
-    const app = initializeApp(firebaseConfig);
-    const db = getDatabase(app);
+let listenerCount=0;
+KIDS.forEach(kid=>{
+  db.ref("chores/"+kid.key+"/"+wk).on("value",snap=>{
+    allData[kid.key]=snap.val()||{};
+    listenerCount++;
+    if(listenerCount>=KIDS.length){syncDot.className="syn ok";}
+    renderAll();
+  },()=>syncDot.className="syn er");
+});
 
-    const dayChips = document.querySelectorAll('.daychip');
-    let currentDay = "Mon";
+function renderAll(){
+  renderOverview();
+  KIDS.forEach(k=>renderKidDetail(k));
+  renderRewards();
+  renderPenalties();
+}
 
-    // Day toggle switcher
-    dayChips.forEach(chip => {
-      chip.addEventListener('click', () => {
-        dayChips.forEach(c => c.classList.remove('sel'));
-        chip.classList.add('sel');
-        currentDay = chip.textContent;
-        syncParentDashboard(currentDay);
-      });
+function renderOverview(){
+  const el=document.getElementById("tab-overview");
+  const scores=KIDS.map(k=>({...k,score:calcScore(allData[k.key])}));
+  const sorted=[...scores].sort((a,b)=>b.score-a.score);
+  const max=Math.max(1,...scores.map(s=>s.score));
+  const medals=["🥇","🥈","🥉"],ranks=["lb-r1","lb-r2","lb-r3"];
+
+  let html=`<div class="sec-title">🏆 Leaderboard</div><div class="lboard">`;
+  sorted.forEach((k,i)=>{
+    html+=`<div class="lb-row"><div class="lb-rank ${ranks[i]}">${medals[i]}</div><div class="lb-name">${k.name}</div><div class="lb-bar-wrap"><div class="lb-bar-fill" style="width:${Math.round(k.score/max*100)}%;background:${k.color}"></div></div><div class="lb-pts" style="color:${k.color}">${k.score} pts</div></div>`;
+  });
+  html+=`</div><div class="sec-title" style="margin-top:1rem">📊 Each Kid This Week</div>`;
+
+  scores.forEach(k=>{
+    const days=DAYS.map((_,i)=>getDayScore(allData[k.key],i));
+    html+=`<div class="kid-card"><div class="kid-card-top" style="background:${k.color}"></div><div class="kid-card-body">
+      <div class="kid-row"><div class="kid-avatar" style="background:${k.color}">${k.emoji}</div><div class="kid-info"><div class="kid-name">${k.name}</div></div><div class="kid-score" style="color:${k.color}">${k.score} pts</div></div>
+      <div class="kid-bar-wrap"><div class="kid-bar-fill" style="width:${Math.round(k.score/Math.max(500,k.score)*100)}%;background:${k.color}"></div></div>
+      <div class="day-grid">${DAYS.map((d,i)=>`<div class="dg-col"><div class="dg-label">${d}</div><div class="dg-val ${days[i]>0?"has":""}">${days[i]>0?days[i]:"–"}</div></div>`).join("")}</div>
+    </div></div>`;
+  });
+  el.innerHTML=html;
+}
+
+function renderKidDetail(kid){
+  const el=document.getElementById("tab-"+kid.key);
+  const data=allData[kid.key]||{};
+  const score=calcScore(data);
+  const secs=[{label:"Daily Chores",chores:DAILY},{label:"Specialty Chores",chores:SPEC},{label:"Weekly Chores",chores:WEEKLY},{label:"DoorDash/Uber",chores:DASH}];
+
+  let html=`<div style="font-size:var(--xl);font-weight:700;color:${kid.color};margin-bottom:1rem">${score} pts this week</div>`;
+  html+=`<div style="overflow-x:auto;margin-bottom:1rem"><table class="ctable"><thead><tr><th>Chore</th>`;
+  DAYS.forEach(d=>html+=`<th class="day">${d}</th>`);
+  html+=`<th>Pts</th></tr></thead><tbody>`;
+  secs.forEach(sec=>{
+    html+=`<tr class="section-row"><td colspan="${DAYS.length+2}">${sec.label}</td></tr>`;
+    sec.chores.forEach(ch=>{
+      const vals=DAYS.map(d=>(data[d]||{})[ch.id]||false);
+      const tot=vals.reduce((t,v)=>t+(v?ch.pts:0),0);
+      html+=`<tr><td>${ch.name}</td>`;
+      vals.forEach(v=>html+=`<td class="day ${v?"ck":"cx"}">${v?"✓":"–"}</td>`);
+      html+=`<td style="text-align:right;font-weight:600;color:var(--sp)">${tot}</td></tr>`;
     });
+  });
+  if(data.penalties){
+    html+=`<tr><td style="color:var(--rd);font-weight:600">Penalties (×${data.penalties})</td>`;
+    DAYS.forEach(()=>html+=`<td></td>`);
+    html+=`<td style="text-align:right;color:var(--rd);font-weight:600">-${data.penalties*15}</td></tr>`;
+  }
+  html+=`<tr style="background:var(--s2);font-weight:700"><td>TOTAL</td>`;
+  DAYS.forEach((_,i)=>{const ds=getDayScore(data,i);html+=`<td class="day" style="color:var(--sp)">${ds||"–"}</td>`;});
+  html+=`<td style="text-align:right;color:${score>=0?"var(--sp)":"var(--rd)"}">${score}</td></tr>`;
+  html+=`</tbody></table></div>`;
+  el.innerHTML=html;
+}
 
-    // Main multi-listener to download all kid statuses simultaneously
-    function syncParentDashboard(day) {
-      // 1. Listen to Ethan
-      onValue(ref(db, `ethan/days/${day}`), (snapshot) => {
-        const data = snapshot.val() || {};
-        updateLight("ethan_0", data.chore_0);
-      });
+function renderRewards(){
+  const el=document.getElementById("tab-rewards");
+  let html=`<div class="rew-grid">`;
+  REWARDS.forEach(r=>{
+    html+=`<div class="rew-card"><div class="rew-card-icon">${r.icon}</div><div class="rew-card-name">${r.name}<br><small style="color:var(--tm);font-weight:400">${r.pts} pts</small></div><div class="rew-kids">`;
+    KIDS.forEach(k=>{
+      const s=calcScore(allData[k.key]);
+      const can=s>=r.pts;
+      html+=`<div class="rew-kid-row"><span style="color:${k.color};font-weight:600">${k.name}</span><span class="rew-badge ${can?"yes":"no"}">${can?"✅ YES":`${r.pts-s} more`}</span></div>`;
+    });
+    html+=`</div></div>`;
+  });
+  html+=`</div>`;
+  el.innerHTML=html;
+}
 
-      // 2. Listen to Jacob
-      onValue(ref(db, `jacob/days/${day}`), (snapshot) => {
-        const data = snapshot.val() || {};
-        updateLight("jacob_0", data.chore_0);
-        updateLight("jacob_1", data.chore_1);
-      });
+function renderPenalties(){
+  const el=document.getElementById("tab-penalty");
+  let html=`<div class="pen-panel"><div class="pen-panel-hdr">⚠️ Penalty Controls (–15 pts each)</div>`;
+  KIDS.forEach(kid=>{
+    const p=allData[kid.key].penalties||0;
+    html+=`<div class="pen-kid-row">
+      <div><div class="pen-kid-name" style="color:${kid.color}">${kid.name}</div><div class="pen-total">–${p*15} pts total</div></div>
+      <div class="pen-ctrl">
+        <button class="pen-btn m" onclick="changePenalty('${kid.key}',-1)">−</button>
+        <div class="pen-num" id="pen-${kid.key}">${p}</div>
+        <button class="pen-btn p" onclick="changePenalty('${kid.key}',1)">+</button>
+      </div>
+    </div>`;
+  });
+  html+=`</div>`;
+  el.innerHTML=html;
+}
 
-      // 3. Listen to Mia
-      onValue(ref(db, `mia/days/${day}`), (snapshot) => {
-        const data = snapshot.val() || {};
-        updateLight("mia_0", data.chore_0);
-      });
-    }
+function changePenalty(kidKey,delta){
+  const cur=allData[kidKey].penalties||0;
+  const next=Math.max(0,cur+delta);
+  db.ref("chores/"+kidKey+"/"+wk+"/penalties").set(next||null);
+}
 
-    // Dynamic label/color flipper helper
-    function updateLight(elementId, isDone) {
-      const el = document.getElementById(elementId);
-      if(!el) return;
-      
-      if (isDone === true) {
-        el.textContent = "Done";
-        el.classList.add('active');
-      } else {
-        el.textContent = "Open";
-        el.classList.remove('active');
-      }
-    }
+function showTab(id){
+  document.querySelectorAll(".tab-panel").forEach(p=>p.classList.remove("act"));
+  document.querySelectorAll(".tab").forEach(t=>t.classList.remove("act"));
+  document.getElementById("tab-"+id).classList.add("act");
+  const tabs=["overview","jacob","ethan","mia","rewards","penalty"];
+  document.querySelectorAll(".tab")[tabs.indexOf(id)].classList.add("act");
+}
 
-    // Initialize display on load
-    syncParentDashboard(currentDay);
-  </script>
-
+(function(){const btn=document.getElementById("themeBtn"),html=document.documentElement;let dk=window.matchMedia("(prefers-color-scheme: dark)").matches;html.setAttribute("data-theme",dk?"dark":"light");btn.innerHTML=dk?"☀️":"🌙";btn.addEventListener("click",()=>{dk=!dk;html.setAttribute("data-theme",dk?"dark":"light");btn.innerHTML=dk?"☀️":"🌙";});})();
+</script>
 </body>
 </html>

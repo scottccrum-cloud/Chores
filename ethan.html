@@ -1,271 +1,318 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" data-theme="light">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-  <title>Ethan's Chore Chart</title>
-  <link href="https://api.fontshare.com/v2/css?f[]=satoshi@400,500,700,800&display=swap" rel="stylesheet">
-  <style>
-    /* --- Global Styles & Theme Variables --- */
-    :root {
-      --font: 'Satoshi', -apple-system, sans-serif;
-      --bg: #121824;         /* Deep space dark background */
-      --sur: #1e2640;        /* Card backgrounds */
-      --sur2: #171e30;       /* Inside item backgrounds */
-      --brd: #2d3748;        /* Clean borders */
-      --div: rgba(255, 255, 255, 0.08);
-      --tx: #f3f4f6;         /* Crisp off-white text */
-      --txm: #9ca3af;        /* Soft gray secondary text */
-      
-      /* Vibrant Neon Accents */
-      --pri: #3b82f6;        /* Ethan's custom theme: Tech Blue */
-      --sph: #10b981;        
-      --wkh: #a855f7;        
-      --dbh: #f59e0b;        
-      --red: #ef4444;        
-      --pur: #ec4899;        
-      --mon: #06b6d4;        
-    }
-
-    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
-    body {
-      font-family: var(--font);
-      background: var(--bg);
-      color: var(--tx);
-      min-height: 100dvh;
-      padding-bottom: 80px;
-    }
-
-    /* --- Header --- */
-    .hdr {
-      position: sticky;
-      top: 0;
-      z-index: 100;
-      background: var(--sur);
-      border-bottom: 1px solid var(--brd);
-      padding: 15px 20px;
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-    }
-    .hdr-title {
-      font-size: 1.4rem;
-      font-weight: 800;
-      background: linear-gradient(45deg, #3b82f6, #06b6d4);
-      -webkit-background-clip: text;
-      -webkit-text-fill-color: transparent;
-      text-transform: uppercase;
-    }
-    .hdr-sub { font-size: 0.8rem; color: var(--txm); }
-
-    /* --- Day Selector Strip --- */
-    .day-strip {
-      display: flex;
-      gap: 10px;
-      padding: 15px 20px;
-      overflow-x: auto;
-    }
-    .daychip {
-      flex: 1;
-      min-width: 50px;
-      padding: 10px;
-      border-radius: 10px;
-      font-size: 0.85rem;
-      font-weight: 700;
-      background: var(--sur2);
-      border: 2px solid var(--brd);
-      color: var(--txm);
-      transition: all 0.2s ease;
-    }
-    .daychip.sel {
-      background: var(--pri);
-      border-color: var(--pri);
-      color: #fff;
-      transform: scale(1.05);
-    }
-
-    /* --- Content Sections & Cards --- */
-    .content { padding: 0 20px; display: flex; flex-direction: column; gap: 20px; }
-    .sec {
-      background: var(--sur);
-      border-radius: 16px;
-      overflow: hidden;
-      border: 1px solid var(--brd);
-      box-shadow: 0 4px 15px rgba(0,0,0,0.2);
-    }
-    .sec-hdr {
-      padding: 12px 20px;
-      font-weight: 700;
-      font-size: 1rem;
-      text-transform: uppercase;
-      letter-spacing: 0.5px;
-      display: flex;
-      justify-content: space-between;
-      background: rgba(255,255,255,0.05);
-      border-bottom: 1px solid var(--brd);
-    }
-    .sec-hdr span { font-size: 0.75rem; opacity: 0.7; }
-
-    .s-daily .sec-hdr { color: var(--pri); }
-
-    /* --- Chore List Items --- */
-    .citem {
-      display: flex;
-      align-items: center;
-      padding: 15px 20px;
-      border-bottom: 1px solid var(--div);
-      background: var(--sur);
-    }
-    .citem:last-child { border-bottom: none; }
-    .cinfo { flex: 1; }
-    .cname { font-size: 1rem; font-weight: 500; }
-    .cnote { font-size: 0.8rem; color: var(--txm); }
-    .cpts { font-weight: 700; font-size: 1rem; margin-right: 15px; color: var(--pri); }
-
-    /* --- Custom Checkbox Circles --- */
-    .circ {
-      width: 32px;
-      height: 32px;
-      border-radius: 50%;
-      border: 2px solid var(--brd);
-      background: var(--sur2);
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      transition: all 0.2s ease;
-    }
-    .circ.ok {
-      background: var(--pri);
-      border-color: var(--pri);
-      box-shadow: 0 0 10px rgba(59, 130, 246, 0.4);
-    }
-    .circ svg { opacity: 0; }
-    .circ.ok svg { opacity: 1; }
-
-    /* --- Bottom Score Bar --- */
-    .score-bar {
-      position: fixed;
-      bottom: 0;
-      left: 0;
-      right: 0;
-      z-index: 200;
-      background: var(--sur);
-      border-top: 1px solid var(--brd);
-      padding: 15px 20px;
-      display: flex;
-      align-items: center;
-      gap: 20px;
-    }
-    .sc-disp { flex: 1; }
-    .sc-lbl { font-size: 0.75rem; color: var(--txm); text-transform: uppercase; }
-    .sc-val { font-size: 1.5rem; font-weight: 800; color: var(--pri); }
-    .sc-bar { flex: 2; height: 10px; background: var(--sur2); border-radius: 5px; overflow: hidden; }
-    .sc-fill { height: 100%; background: var(--pri); border-radius: 5px; box-shadow: 0 0 8px var(--pri); }
-  </style>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<title>Ethan's Chore Chart</title>
+<link href="https://api.fontshare.com/v2/css?f[]=satoshi@400,500,700&display=swap" rel="stylesheet">
+<style>
+:root{--f:Satoshi,-apple-system,sans-serif;--xs:.75rem;--sm:.9rem;--bs:1rem;--lg:1.2rem;--xl:1.6rem;--2xl:2rem;--rl:.75rem;--rx:1rem;--rf:9999px;--col:#196B24;--col-lt:#e2f0d9}
+[data-theme=light]{--bg:#f6f5f1;--su:#fff;--s2:#f4f3ef;--bd:rgba(0,0,0,.1);--dv:rgba(0,0,0,.07);--tx:#1a1a18;--tm:#6b6a67;--rd:#C00000;--sp:#375623;--pur:#5C2D91}
+[data-theme=dark]{--bg:#141413;--su:#1c1b19;--s2:#222120;--bd:rgba(255,255,255,.1);--dv:rgba(255,255,255,.06);--tx:#e0dfdc;--tm:#8a8986;--rd:#e05555;--sp:#6daa45;--pur:#9b5cd4;--col:#4fa347;--col-lt:rgba(79,152,200,.15)}
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+html{-webkit-text-size-adjust:none;scroll-behavior:smooth}
+body{font-family:var(--f);background:var(--bg);color:var(--tx);min-height:100dvh;padding-bottom:80px;-webkit-tap-highlight-color:transparent}
+button,a{cursor:pointer;font:inherit;border:none;background:none;color:inherit;text-decoration:none}
+/* Header */
+.hdr{position:sticky;top:0;z-index:100;background:var(--su);border-bottom:1px solid var(--dv);padding:.75rem 1rem;display:flex;align-items:center;gap:.75rem;box-shadow:0 1px 3px rgba(0,0,0,.06)}
+.back-btn{width:38px;height:38px;border-radius:var(--rf);display:flex;align-items:center;justify-content:center;background:var(--s2);border:1px solid var(--bd);font-size:1rem;flex-shrink:0}
+.hdr-mid{flex:1}
+.hdr-name{font-size:var(--lg);font-weight:700}
+.hdr-week{font-size:var(--xs);color:var(--tm)}
+.hdr-r{display:flex;align-items:center;gap:.4rem}
+.ibtn{width:38px;height:38px;border-radius:var(--rf);display:flex;align-items:center;justify-content:center;background:var(--s2);border:1px solid var(--bd);font-size:1rem}
+.syn{width:8px;height:8px;border-radius:50%;background:#aaa;display:inline-block}
+.syn.ok{background:#22c55e}.syn.er{background:var(--rd)}.syn.bz{background:#d4a820;animation:pls .8s infinite}
+@keyframes pls{0%,100%{opacity:1}50%{opacity:.4}}
+/* Day strip */
+.day-strip-wrap{background:var(--su);border-bottom:1px solid var(--dv);padding:.6rem 1rem}
+.day-strip{display:flex;gap:.5rem;overflow-x:auto;scrollbar-width:none;padding-bottom:2px}
+.day-strip::-webkit-scrollbar{display:none}
+.daychip{flex-shrink:0;min-width:48px;padding:.45rem .3rem;border-radius:.6rem;font-size:var(--xs);font-weight:700;text-align:center;border:2px solid var(--bd);background:var(--s2);color:var(--tm);transition:all .15s;cursor:pointer;-webkit-tap-highlight-color:transparent}
+.daychip .dname{display:block}
+.daychip .dpts{display:block;font-size:.65rem;font-weight:500;margin-top:1px;opacity:.7}
+.daychip.today{border-color:var(--col);color:var(--col)}
+.daychip.sel{background:var(--col);border-color:var(--col);color:#fff}
+.daychip.sel .dpts{opacity:.85}
+/* Content */
+.content{padding:1rem;display:flex;flex-direction:column;gap:1rem;max-width:640px;margin:0 auto}
+/* Section */
+.sec{border-radius:var(--rx);overflow:hidden;box-shadow:0 1px 4px rgba(0,0,0,.07)}
+.sec-hdr{padding:.65rem 1rem;font-weight:700;font-size:var(--sm);display:flex;align-items:center;justify-content:space-between;color:#fff}
+.sec-hdr small{opacity:.8;font-size:var(--xs);font-weight:500}
+.sh-daily{background:var(--col)}
+.sh-spec{background:var(--sp)}
+.sh-week{background:#7F6000}
+.sh-dash{background:#833C00}
+.sh-pen{background:var(--rd)}
+/* Chore row */
+.clist{background:var(--su)}
+.citem{display:flex;align-items:center;border-bottom:1px solid var(--dv);min-height:56px;cursor:pointer;-webkit-tap-highlight-color:transparent}
+.citem:last-child{border-bottom:none}
+.citem:active{background:var(--s2)}
+.cinfo{flex:1;padding:.65rem .75rem}
+.cname{font-size:var(--sm);font-weight:500;line-height:1.3}
+.cnote{font-size:var(--xs);color:var(--tm);margin-top:1px}
+.cpts-badge{min-width:48px;padding:0 .5rem;text-align:center;font-weight:700;font-size:var(--sm);color:var(--sp);border-left:1px solid var(--dv);align-self:stretch;display:flex;align-items:center;justify-content:center}
+.cpts-badge.neg{color:var(--rd)}
+.ccheck{width:56px;min-height:56px;border-left:1px solid var(--dv);display:flex;align-items:center;justify-content:center}
+.circ{width:32px;height:32px;border-radius:var(--rf);border:2.5px solid var(--bd);display:flex;align-items:center;justify-content:center;transition:all .15s;background:var(--s2)}
+.circ.done{background:var(--col);border-color:var(--col)}
+.circ svg{opacity:0;transition:opacity .15s}
+.circ.done svg{opacity:1}
+/* Penalty control */
+.pen-row{display:flex;align-items:center;gap:.75rem;padding:.75rem 1rem;background:var(--su);flex-wrap:wrap}
+.pen-lbl{flex:1;font-size:var(--sm);font-weight:500;min-width:120px}
+.pen-ctrl{display:flex;align-items:center;gap:.75rem}
+.pen-btn{width:40px;height:40px;border-radius:var(--rf);font-size:1.3rem;font-weight:700;display:flex;align-items:center;justify-content:center;border:2px solid var(--bd);background:var(--s2);transition:all .15s}
+.pen-btn.minus{border-color:var(--rd);color:var(--rd)}
+.pen-btn.plus{border-color:var(--sp);color:var(--sp)}
+.pen-btn:active{transform:scale(.88)}
+.pen-num{font-size:var(--xl);font-weight:700;color:var(--rd);min-width:32px;text-align:center}
+/* Rewards */
+.rew-item{display:flex;align-items:center;gap:.75rem;padding:.75rem 1rem;border-bottom:1px solid var(--dv);background:var(--su)}
+.rew-item:last-child{border-bottom:none}
+.rew-icon{font-size:1.4rem;width:2rem;text-align:center}
+.rew-info{flex:1}
+.rew-name{font-size:var(--sm);font-weight:600}
+.rew-detail{font-size:var(--xs);color:var(--tm)}
+.rew-status{font-size:var(--sm);font-weight:700;white-space:nowrap}
+.rew-status.can{color:#196B24}
+.rew-status.soon{color:#d4a820}
+.rew-status.no{color:var(--tm)}
+/* Money tiers */
+.mgrid{background:var(--su);display:grid;grid-template-columns:1fr 1fr}
+.mcell{padding:.65rem .75rem;border-bottom:1px solid var(--dv);display:flex;flex-direction:column;gap:2px}
+.mcell:nth-child(odd){border-right:1px solid var(--dv)}
+.mcell:nth-child(3),.mcell:nth-child(4){border-bottom:none}
+.mrange{font-size:var(--xs);color:var(--tm)}
+.mval{font-size:var(--lg);font-weight:700;color:var(--sp)}
+/* Score bar */
+.score-bar{position:fixed;bottom:0;left:0;right:0;z-index:90;background:var(--su);border-top:1px solid var(--dv);padding:.75rem 1rem;display:flex;align-items:center;gap:1rem;box-shadow:0 -4px 16px rgba(0,0,0,.08)}
+.sc-info{display:flex;flex-direction:column;gap:2px}
+.sc-lbl{font-size:var(--xs);color:var(--tm)}
+.sc-val{font-size:var(--xl);font-weight:700;color:var(--col);line-height:1}
+.sc-bar-wrap{flex:1;height:8px;border-radius:var(--rf);background:var(--s2);overflow:hidden}
+.sc-bar-fill{height:100%;border-radius:var(--rf);background:var(--col);transition:width .4s ease}
+.sc-reward{font-size:var(--xs);color:var(--tm);text-align:right;white-space:nowrap}
+/* Toast */
+.toast{position:fixed;bottom:76px;left:50%;transform:translateX(-50%) translateY(8px);background:#1a1a18;color:#fff;font-size:var(--sm);font-weight:500;padding:.4rem 1.2rem;border-radius:var(--rf);opacity:0;pointer-events:none;transition:opacity .2s,transform .2s;white-space:nowrap;z-index:200}
+.toast.show{opacity:1;transform:translateX(-50%) translateY(0)}
+</style>
 </head>
 <body>
-
-  <div class="hdr">
-    <div>
-      <div class="hdr-title">Ethan's Station</div>
-      <div class="hdr-sub">Player 1 Dashboard</div>
-    </div>
+<header class="hdr">
+  <a class="back-btn" href="index.html">&#8592;</a>
+  <div class="hdr-mid">
+    <div class="hdr-name">⭐ Ethan's Chores</div>
+    <div class="hdr-week" id="wkLbl">Loading…</div>
   </div>
-
-  <div class="day-strip">
-    <button class="daychip sel">Mon</button>
-    <button class="daychip">Tue</button>
-    <button class="daychip">Wed</button>
-    <button class="daychip">Thu</button>
-    <button class="daychip">Fri</button>
-    <button class="daychip">Sat</button>
-    <button class="daychip">Sun</button>
+  <div class="hdr-r">
+    <span class="syn" id="syncDot"></span>
+    <button class="ibtn" id="themeBtn">🌙</button>
   </div>
+</header>
 
-  <div class="content">
-    <div class="sec s-daily">
-      <div class="sec-hdr">Daily Core Checklists <span>Reset Nightly</span></div>
-      
-      <div class="citem">
-        <div class="cinfo">
-          <div class="cname">Wipe down kitchen counters</div>
-          <div class="cnote">Evening routine duty</div>
-        </div>
-        <div class="cpts">50 XP</div>
-        <div class="circ"><svg width="16" height="12" viewBox="0 0 16 12" fill="none"><path d="M1 5L5.5 9.5L15 1" stroke="#121824" stroke-width="3" stroke-linecap="round"/></svg></div>
-      </div>
-    </div>
+<div class="day-strip-wrap">
+  <div class="day-strip" id="dayStrip"></div>
+</div>
+
+<div class="toast" id="toast"></div>
+<div class="content" id="mainContent"></div>
+
+<div class="score-bar">
+  <div class="sc-info">
+    <div class="sc-lbl">This week</div>
+    <div class="sc-val" id="scVal">0 pts</div>
   </div>
+  <div class="sc-bar-wrap"><div class="sc-bar-fill" id="scBar" style="width:0%"></div></div>
+  <div class="sc-reward" id="scReward"></div>
+</div>
 
-  <div class="score-bar">
-    <div class="sc-disp">
-      <div class="sc-lbl">Weekly Balance</div>
-      <div class="sc-val">50 XP</div>
-    </div>
-    <div class="sc-bar">
-      <div class="sc-fill" style="width: 20%;"></div>
-    </div>
-  </div>
+<script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-database-compat.js"></script>
+<script>
+firebase.initializeApp({apiKey:"AIzaSyD1tuzNLZOcirHiWIORiD0lyvCnWQbdJMM",authDomain:"chore-chart-2026.firebaseapp.com",databaseURL:"https://chore-chart-2026-default-rtdb.firebaseio.com",projectId:"chore-chart-2026",storageBucket:"chore-chart-2026.firebasestorage.app",messagingSenderId:"648704780405",appId:"1:648704780405:web:246dc2cf5301085469b03c"});
+const db=firebase.database();
+const KID="ethan";
 
-  <script type="module">
-    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.0.0/firebase-app.js";
-    import { getAuth } from "https://www.gstatic.com/firebasejs/10.0.0/firebase-auth.js";
-    import { getDatabase, ref, set, onValue } from "https://www.gstatic.com/firebasejs/10.0.0/firebase-database.js";
+const DAILY=[
+  {id:"ct",name:"Clean Toilets",pts:5},
+  {id:"dg",name:"Dog Food & Water",pts:5},
+  {id:"sh",name:"Shower",pts:5},
+  {id:"wu",name:"Wake Up on Time",pts:5},
+  {id:"bd",name:"Make Bed",pts:5}
+];
+const SPEC=[
+  {id:"sl",name:"Sweep Living Room",pts:10},
+  {id:"st",name:"Sweep Stairs",pts:10},
+  {id:"sk",name:"Sweep Kitchen",pts:10},
+  {id:"di",name:"Dishes",note:"Wash & put away",pts:20},
+  {id:"ck",name:"Cook / Prep Meal",note:"Including cleanup",pts:20},
+  {id:"ws",name:"Wash Clothes",pts:15},
+  {id:"dr",name:"Dry Clothes",pts:10}
+];
+const WEEKLY=[
+  {id:"gr",name:"Cut Grass",pts:25},
+  {id:"tr",name:"Take Out Trash",note:"Wed & Sun",pts:25}
+];
+const DASH=[{id:"dd",name:"DoorDash / Uber Eats Day",note:"Full delivery day",pts:50}];
+const ALL_CHORES=DAILY.concat(SPEC).concat(WEEKLY).concat(DASH);
 
-    const firebaseConfig = {
-      apiKey: "AIzaSyD1tuzNLZOcirHiWIORiD0lyvCnWQbdJMM",
-      authDomain: "chore-chart-2026.firebaseapp.com",
-      databaseURL: "https://chore-chart-2026-default-rtdb.firebaseio.com/",
-      projectId: "chore-chart-2026",
-      storageBucket: "chore-chart-2026.firebasestorage.app",
-      messagingSenderId: "648704780405",
-      appId: "1:648704780405:web:246dc2cf5301085469b03c"
-    };
+const REWARDS=[
+  {icon:"🎮",name:"Xbox 1 Hour",pts:50},
+  {icon:"📶",name:"WiFi Password",pts:50},
+  {icon:"🎉",name:"Go Out with Friends",pts:250},
+  {icon:"💵",name:"Cash $25",pts:500},
+  {icon:"💵",name:"Cash $50",pts:1501},
+  {icon:"💵",name:"Cash $75",pts:5001},
+  {icon:"💵",name:"Cash $100",pts:7501}
+];
 
-    const app = initializeApp(firebaseConfig);
-    const db = getDatabase(app);
+const DAYS=["Mon","Tue","Wed","Thu","Fri","Sat","Sun"];
 
-    // --- Dynamic App Logic ---
-    const circles = document.querySelectorAll('.circ');
-    const dayChips = document.querySelectorAll('.daychip');
-    let currentDay = "Mon";
+function getWeekKey(){const t=new Date(),yr=t.getFullYear(),j=new Date(yr,0,1),w=Math.ceil(((t-j)/86400000+j.getDay()+1)/7);return yr+"_W"+String(w).padStart(2,"0");}
+function getWeekLabel(){const t=new Date(),yr=t.getFullYear(),j=new Date(yr,0,1),w=Math.ceil(((t-j)/86400000+j.getDay()+1)/7),m=new Date(j.getTime()+(w-1)*7*86400000),s=new Date(m.getTime()+6*86400000),f=d=>d.toLocaleDateString("en-US",{month:"short",day:"numeric"});return f(m)+" – "+f(s);}
+function getTodayIdx(){const d=new Date().getDay();return d===0?6:d-1;}
 
-    // Listen for Day Switches
-    dayChips.forEach(chip => {
-      chip.addEventListener('click', () => {
-        dayChips.forEach(c => c.classList.remove('sel'));
-        chip.classList.add('sel');
-        currentDay = chip.textContent;
-        loadDataForDay(currentDay);
-      });
+const wk=getWeekKey();
+let selDay=getTodayIdx();
+let weekData={};
+let weekScore=0;
+
+const syncDot=document.getElementById("syncDot");
+syncDot.className="syn bz";
+
+document.getElementById("wkLbl").textContent="Week: "+getWeekLabel();
+
+// Live listener
+db.ref("chores/"+KID+"/"+wk).on("value",snap=>{
+  weekData=snap.val()||{};
+  syncDot.className="syn ok";
+  recalcScore();
+  renderDayStrip();
+  renderDay(selDay);
+},()=>syncDot.className="syn er");
+
+function recalcScore(){
+  let t=0;
+  DAYS.forEach(day=>{
+    const dc=(weekData[day])||{};
+    ALL_CHORES.forEach(ch=>{if(dc[ch.id])t+=ch.pts;});
+  });
+  t-=(weekData.penalties||0)*15;
+  weekScore=t;
+  const el=document.getElementById("scVal");
+  if(el)el.textContent=weekScore+" pts";
+  // progress bar toward next reward
+  const next=REWARDS.slice().reverse().find(r=>weekScore<r.pts)||REWARDS[REWARDS.length-1];
+  const bar=document.getElementById("scBar");
+  if(bar){
+    const prev=REWARDS.filter(r=>r.pts<=weekScore).pop();
+    const lo=prev?prev.pts:0,hi=next.pts;
+    bar.style.width=Math.min(100,Math.round((weekScore-lo)/(hi-lo)*100))+"%";
+  }
+  const rw=document.getElementById("scReward");
+  if(rw){
+    const canDo=REWARDS.filter(r=>weekScore>=r.pts).pop();
+    rw.textContent=canDo?"✅ "+canDo.name:"Next: "+next.name+" ("+next.pts+"pt)";
+  }
+}
+
+function getDayScore(dayIdx){
+  const dc=(weekData[DAYS[dayIdx]])||{};
+  let t=0;ALL_CHORES.forEach(ch=>{if(dc[ch.id])t+=ch.pts;});
+  return t;
+}
+
+function renderDayStrip(){
+  const strip=document.getElementById("dayStrip");
+  const todayIdx=getTodayIdx();
+  strip.innerHTML="";
+  DAYS.forEach((d,i)=>{
+    const chip=document.createElement("button");
+    chip.className="daychip"+(i===selDay?" sel":i===todayIdx?" today":"");
+    const ds=getDayScore(i);
+    chip.innerHTML=`<span class="dname">${d}</span><span class="dpts">${ds>0?ds+"pt":"–"}</span>`;
+    chip.onclick=()=>{selDay=i;renderDayStrip();renderDay(i);};
+    strip.appendChild(chip);
+  });
+}
+
+function renderDay(dayIdx){
+  const day=DAYS[dayIdx];
+  const dc=(weekData[day])||{};
+  const content=document.getElementById("mainContent");
+  content.innerHTML="";
+
+  // Helper to make section
+  function makeSection(label,chores,hdrClass){
+    const sec=document.createElement("div");sec.className="sec";
+    const earned=chores.reduce((t,ch)=>t+(dc[ch.id]?ch.pts:0),0);
+    sec.innerHTML=`<div class="sec-hdr ${hdrClass}">${label}<small>${earned} pts earned</small></div>`;
+    const list=document.createElement("div");list.className="clist";
+    chores.forEach(ch=>{
+      const done=!!dc[ch.id];
+      const item=document.createElement("div");item.className="citem";
+      item.innerHTML=`<div class="cinfo"><div class="cname">${ch.name}</div>${ch.note?`<div class="cnote">${ch.note}</div>`:""}</div><div class="cpts-badge">+${ch.pts}</div><div class="ccheck"><div class="circ${done?" done":""}"><svg width="16" height="16" viewBox="0 0 16 16"><polyline points="3,8 6.5,12 13,4" fill="none" stroke="#fff" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg></div></div>`;
+      item.onclick=()=>toggleChore(day,ch.id,ch.pts,!done);
+      list.appendChild(item);
     });
+    sec.appendChild(list);
+    content.appendChild(sec);
+  }
 
-    // Handle Checking/Unchecking Chores
-    circles.forEach((circle, index) => {
-      circle.addEventListener('click', () => {
-        const isDone = circle.classList.toggle('ok');
-        // Save status straight to Ethan's slot in the cloud database!
-        set(ref(db, `ethan/days/${currentDay}/chore_${index}`), isDone);
-      });
-    });
+  makeSection("📋 Daily Chores",DAILY,"sh-daily");
+  makeSection("🧹 Specialty Chores",SPEC,"sh-spec");
+  makeSection("📅 Weekly Chores",WEEKLY,"sh-week");
+  makeSection("🚗 DoorDash / Uber Eats",DASH,"sh-dash");
 
-    // Load Data from Firebase Clubhouse automatically
-    function loadDataForDay(day) {
-      onValue(ref(db, `ethan/days/${day}`), (snapshot) => {
-        const data = snapshot.val() || {};
-        circles.forEach((circle, index) => {
-          if (data[`chore_${index}`] === true) {
-            circle.classList.add('ok');
-          } else {
-            circle.classList.remove('ok');
-          }
-        });
-      });
-    }
+  // Penalties
+  const penSec=document.createElement("div");penSec.className="sec";
+  const penCount=weekData.penalties||0;
+  penSec.innerHTML=`<div class="sec-hdr sh-pen">⚠️ Penalties<small>–${penCount*15} pts total</small></div><div class="clist"><div class="pen-row"><div class="pen-lbl">Lying / Not Listening<br><small style="color:var(--tm)">–15 pts each</small></div><div class="pen-ctrl"><button class="pen-btn minus" onclick="changePenalty(-1)">−</button><div class="pen-num">${penCount}</div><button class="pen-btn plus" onclick="changePenalty(1)">+</button></div></div></div>`;
+  content.appendChild(penSec);
 
-    // Run setup on startup
-    loadDataForDay(currentDay);
-  </script>
+  // Rewards
+  const rewSec=document.createElement("div");rewSec.className="sec";
+  rewSec.innerHTML=`<div class="sec-hdr" style="background:var(--pur)">🎁 Rewards Available<small>${weekScore} pts this week</small></div>`;
+  const rewList=document.createElement("div");rewList.className="clist";
+  REWARDS.forEach(r=>{
+    const can=weekScore>=r.pts;
+    const need=r.pts-weekScore;
+    const item=document.createElement("div");item.className="rew-item";
+    item.innerHTML=`<div class="rew-icon">${r.icon}</div><div class="rew-info"><div class="rew-name">${r.name}</div><div class="rew-detail">${r.pts} pts required</div></div><div class="rew-status ${can?"can":need<=50?"soon":"no"}">${can?"✅ YES":`${need} more`}</div>`;
+    rewList.appendChild(item);
+  });
+  rewSec.appendChild(rewList);
+  content.appendChild(rewSec);
 
+  // Money tiers
+  const monSec=document.createElement("div");monSec.className="sec";
+  monSec.innerHTML=`<div class="sec-hdr" style="background:#4A4000">💵 Cash Reward Tiers</div><div class="mgrid"><div class="mcell"><div class="mrange">500 – 1,500 pts</div><div class="mval">$25</div></div><div class="mcell"><div class="mrange">1,501 – 5,000 pts</div><div class="mval">$50</div></div><div class="mcell"><div class="mrange">5,001 – 7,500 pts</div><div class="mval">$75</div></div><div class="mcell"><div class="mrange">7,501+ pts</div><div class="mval">$100</div></div></div>`;
+  content.appendChild(monSec);
+}
+
+function toggleChore(day,choreId,pts,newVal){
+  db.ref("chores/"+KID+"/"+wk+"/"+day+"/"+choreId).set(newVal||null);
+  showToast(newVal?"+"pts+" pts earned! 🎉":"Unchecked");
+}
+
+function changePenalty(delta){
+  const cur=weekData.penalties||0;
+  const next=Math.max(0,cur+delta);
+  db.ref("chores/"+KID+"/"+wk+"/penalties").set(next||null);
+  if(delta>0)showToast("Penalty added: –15 pts");
+}
+
+function showToast(msg){
+  const t=document.getElementById("toast");
+  t.textContent=msg;t.classList.add("show");
+  clearTimeout(t._t);t._t=setTimeout(()=>t.classList.remove("show"),1800);
+}
+
+(function(){const btn=document.getElementById("themeBtn"),html=document.documentElement;let dk=window.matchMedia("(prefers-color-scheme: dark)").matches;html.setAttribute("data-theme",dk?"dark":"light");btn.innerHTML=dk?"☀️":"🌙";btn.addEventListener("click",()=>{dk=!dk;html.setAttribute("data-theme",dk?"dark":"light");btn.innerHTML=dk?"☀️":"🌙";});})();
+</script>
 </body>
 </html>
