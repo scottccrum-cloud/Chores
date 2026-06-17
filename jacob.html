@@ -1,796 +1,157 @@
 <!DOCTYPE html>
-<html lang="en" data-theme="light">
+<html lang="en">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no">
-<meta name="apple-mobile-web-app-capable" content="yes">
-<meta name="apple-mobile-web-app-status-bar-style" content="default">
-<meta name="apple-mobile-web-app-title" content="Jacob's Chores">
-<title>Jacob's Chore Chart</title>
-<link href="https://api.fontshare.com/v2/css?f[]=satoshi@400,500,700&display=swap" rel="stylesheet">
-<style>
-/* --- Global Styles & Theme Variables --- */
-:root {
-  --font: 'Satoshi', -apple-system, sans-serif;
-  --bg: #121824;         /* Deep space dark background */
-  --sur: #1e2640;        /* Card backgrounds */
-  --sur2: #171e30;       /* Inside item backgrounds */
-  --brd: #2d3748;        /* Clean borders */
-  --div: rgba(255, 255, 255, 0.08);
-  --tx: #f3f4f6;         /* Crisp off-white text */
-  --txm: #9ca3af;        /* Soft gray secondary text */
-  
-  /* Vibrant Neon Accents */
-  --pri: #10b981;        /* Jacob's custom theme: Neon Green for daily chores */
-  --sph: #3b82f6;        /* Tech blue for specialty */
-  --wkh: #a855f7;        /* Purple for weekly */
-  --dbh: #f59e0b;        /* Amber for DoorDash/Uber */
-  --red: #ef4444;        /* Bright red for penalties */
-  --pur: #ec4899;        /* Pink/Purple for rewards */
-  --mon: #06b6d4;        /* Cyan for monetary rewards */
-}
-
-*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
-body {
-  font-family: var(--font);
-  background: var(--bg);
-  color: var(--tx);
-  min-height: 100dvh;
-  padding-bottom: 80px;
-}
-
-/* --- Header --- */
-.hdr {
-  position: sticky;
-  top: 0;
-  z-index: 100;
-  background: var(--sur);
-  border-bottom: 1px solid var(--brd);
-  padding: 15px 20px;
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-}
-.hdr-title {
-  font-size: 1.4rem;
-  font-weight: 800;
-  background: linear-gradient(45deg, #10b981, #3b82f6);
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
-  text-transform: uppercase;
-}
-.hdr-sub { font-size: 0.8rem; color: var(--txm); }
-
-/* --- Day Selector Strip --- */
-.week-row { display: none; }
-.day-strip {
-  display: flex;
-  gap: 10px;
-  padding: 15px 20px;
-  overflow-x: auto;
-}
-.daychip {
-  flex: 1;
-  min-width: 50px;
-  padding: 10px;
-  border-radius: 10px;
-  font-size: 0.85rem;
-  font-weight: 700;
-  background: var(--sur2);
-  border: 2px solid var(--brd);
-  color: var(--txm);
-  transition: all 0.2s ease;
-}
-.daychip.sel {
-  background: var(--pri);
-  border-color: var(--pri);
-  color: #fff;
-  transform: scale(1.05);
-}
-
-/* --- Content Sections & Cards --- */
-.content { padding: 0 20px; display: flex; flex-direction: column; gap: 20px; }
-.sec {
-  background: var(--sur);
-  border-radius: 16px;
-  overflow: hidden;
-  border: 1px solid var(--brd);
-  box-shadow: 0 4px 15px rgba(0,0,0,0.2);
-}
-.sec-hdr {
-  padding: 12px 20px;
-  font-weight: 700;
-  font-size: 1rem;
-  text-transform: uppercase;
-  letter-spacing: 0.5px;
-  display: flex;
-  justify-content: space-between;
-  background: rgba(255,255,255,0.05);
-  border-bottom: 1px solid var(--brd);
-}
-.sec-hdr span { font-size: 0.75rem; opacity: 0.7; }
-
-/* Apply neon colors to section headings */
-.s-daily .sec-hdr { color: var(--pri); }
-.s-spec .sec-hdr { color: var(--sph); }
-.s-week .sec-hdr { color: var(--wkh); }
-.s-dash .sec-hdr { color: var(--dbh); }
-.s-pen .sec-hdr { color: var(--red); }
-.s-rew .sec-hdr { color: var(--pur); }
-.s-mon .sec-hdr { color: var(--mon); }
-
-/* --- Chore List Items --- */
-.citem, .pen-item, .rew-item, .mcell {
-  display: flex;
-  align-items: center;
-  padding: 15px 20px;
-  border-bottom: 1px solid var(--div);
-  background: var(--sur);
-}
-.citem:last-child { border-bottom: none; }
-.cinfo { flex: 1; }
-.cname { font-size: 1rem; font-weight: 500; }
-.cnote { font-size: 0.8rem; color: var(--txm); }
-.cpts { font-weight: 700; font-size: 1rem; margin-right: 15px; color: var(--pri); }
-
-/* --- Custom Checkbox Circles --- */
-.circ {
-  width: 32px;
-  height: 32px;
-  border-radius: 50%;
-  border: 2px solid var(--brd);
-  background: var(--sur2);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  transition: all 0.2s ease;
-}
-.circ.ok {
-  background: var(--pri);
-  border-color: var(--pri);
-  box-shadow: 0 0 10px rgba(16, 185, 129, 0.4);
-}
-.circ svg { opacity: 0; }
-.circ.ok svg { opacity: 1; }
-
-/* --- Penalty Counter --- */
-.pen-ctrl { display: flex; align-items: center; gap: 15px; margin-left: auto; }
-.pen-btn {
-  width: 36px;
-  height: 36px;
-  border-radius: 50%;
-  background: var(--sur2);
-  border: 2px solid var(--brd);
-  font-size: 1.2rem;
-  font-weight: 700;
-}
-.pen-btn.p { color: var(--pri); border-color: var(--pri); }
-.pen-btn.m { color: var(--red); border-color: var(--red); }
-.pen-num { font-size: 1.4rem; font-weight: 700; color: var(--red); min-width: 25px; text-align: center; }
-.pen-tot { font-size: 1rem; color: var(--red); font-weight: 700; }
-
-/* --- Bottom Score Bar --- */
-.score-bar {
-  position: fixed;
-  bottom: 0;
-  left: 0;
-  right: 0;
-  z-index: 200;
-  background: var(--sur);
-  border-top: 1px solid var(--brd);
-  padding: 15px 20px;
-  display: flex;
-  align-items: center;
-  gap: 20px;
-}
-.sc-disp { flex: 1; }
-.sc-lbl { font-size: 0.75rem; color: var(--txm); text-transform: uppercase; }
-.sc-val { font-size: 1.5rem; font-weight: 800; color: var(--pri); }
-.sc-bar { flex: 2; height: 10px; background: var(--sur2); border-radius: 5px; overflow: hidden; }
-.sc-fill { height: 100%; background: var(--pri); border-radius: 5px; box-shadow: 0 0 8px var(--pri); }
-.rst-btn {
-  padding: 8px 16px;
-  border-radius: 8px;
-  background: var(--sur2);
-  border: 1px solid var(--brd);
-  font-size: 0.8rem;
-  font-weight: 600;
-  color: var(--txm);
-}
-
-/* --- Toast Notification --- */
-.toast {
-  position: fixed;
-  bottom: 80px;
-  left: 50%;
-  transform: translateX(-50%);
-  background: #000;
-  border: 1px solid var(--pri);
-  padding: 10px 20px;
-  border-radius: 20px;
-  font-size: 0.9rem;
-  opacity: 0;
-  transition: opacity 0.2s;
-}
-.toast.show { opacity: 1; }
-</style>
-Scroll down, leave a commit message like "Updated Jacob's style theme to neon green", and click Commit changes.
-
-Step 2: Update mia.html
-Go to mia.html in your repository.
-
-Click the Pencil Icon to edit.
-
-Delete the old styling code block between the <style> tags.
-
-Paste the version below, which includes custom bright pink/purple styling rules (#ec4899) perfectly fitting Mia's dashboard profile from the selection screen:
-
-HTML
-<style>
-/* --- Global Styles & Theme Variables --- */
-:root {
-  --font: 'Satoshi', -apple-system, sans-serif;
-  --bg: #121824;         /* Deep space dark background */
-  --sur: #1e2640;        /* Card backgrounds */
-  --sur2: #171e30;       /* Inside item backgrounds */
-  --brd: #2d3748;        /* Clean borders */
-  --div: rgba(255, 255, 255, 0.08);
-  --tx: #f3f4f6;         /* Crisp off-white text */
-  --txm: #9ca3af;        /* Soft gray secondary text */
-  
-  /* Vibrant Neon Accents */
-  --pri: #ec4899;         /* Mia's custom theme: Neon Pink for daily chores */
-  --sph: #3b82f6;        /* Tech blue for specialty */
-  --wkh: #a855f7;        /* Purple for weekly */
-  --dbh: #f59e0b;        /* Amber for DoorDash/Uber */
-  --red: #ef4444;        /* Bright red for penalties */
-  --pur: #10b981;        /* Neon Green for rewards */
-  --mon: #06b6d4;        /* Cyan for monetary rewards */
-}
-
-*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
-body {
-  font-family: var(--font);
-  background: var(--bg);
-  color: var(--tx);
-  min-height: 100dvh;
-  padding-bottom: 80px;
-}
-
-/* --- Header --- */
-.hdr {
-  position: sticky;
-  top: 0;
-  z-index: 100;
-  background: var(--sur);
-  border-bottom: 1px solid var(--brd);
-  padding: 15px 20px;
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-}
-.hdr-title {
-  font-size: 1.4rem;
-  font-weight: 800;
-  background: linear-gradient(45deg, #ec4899, #a855f7);
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
-  text-transform: uppercase;
-}
-.hdr-sub { font-size: 0.8rem; color: var(--txm); }
-
-/* --- Day Selector Strip --- */
-.week-row { display: none; }
-.day-strip {
-  display: flex;
-  gap: 10px;
-  padding: 15px 20px;
-  overflow-x: auto;
-}
-.daychip {
-  flex: 1;
-  min-width: 50px;
-  padding: 10px;
-  border-radius: 10px;
-  font-size: 0.85rem;
-  font-weight: 700;
-  background: var(--sur2);
-  border: 2px solid var(--brd);
-  color: var(--txm);
-  transition: all 0.2s ease;
-}
-.daychip.sel {
-  background: var(--pri);
-  border-color: var(--pri);
-  color: #fff;
-  transform: scale(1.05);
-}
-
-/* --- Content Sections & Cards --- */
-.content { padding: 0 20px; display: flex; flex-direction: column; gap: 20px; }
-.sec {
-  background: var(--sur);
-  border-radius: 16px;
-  overflow: hidden;
-  border: 1px solid var(--brd);
-  box-shadow: 0 4px 15px rgba(0,0,0,0.2);
-}
-.sec-hdr {
-  padding: 12px 20px;
-  font-weight: 700;
-  font-size: 1rem;
-  text-transform: uppercase;
-  letter-spacing: 0.5px;
-  display: flex;
-  justify-content: space-between;
-  background: rgba(255,255,255,0.05);
-  border-bottom: 1px solid var(--brd);
-}
-.sec-hdr span { font-size: 0.75rem; opacity: 0.7; }
-
-/* Apply neon colors to section headings */
-.s-daily .sec-hdr { color: var(--pri); }
-.s-spec .sec-hdr { color: var(--sph); }
-.s-week .sec-hdr { color: var(--wkh); }
-.s-dash .sec-hdr { color: var(--dbh); }
-.s-pen .sec-hdr { color: var(--red); }
-.s-rew .sec-hdr { color: var(--pur); }
-.s-mon .sec-hdr { color: var(--mon); }
-
-/* --- Chore List Items --- */
-.citem, .pen-item, .rew-item, .mcell {
-  display: flex;
-  align-items: center;
-  padding: 15px 20px;
-  border-bottom: 1px solid var(--div);
-  background: var(--sur);
-}
-.citem:last-child { border-bottom: none; }
-.cinfo { flex: 1; }
-.cname { font-size: 1rem; font-weight: 500; }
-.cnote { font-size: 0.8rem; color: var(--txm); }
-.cpts { font-weight: 700; font-size: 1rem; margin-right: 15px; color: var(--pri); }
-
-/* --- Custom Checkbox Circles --- */
-.circ {
-  width: 32px;
-  height: 32px;
-  border-radius: 50%;
-  border: 2px solid var(--brd);
-  background: var(--sur2);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  transition: all 0.2s ease;
-}
-.circ.ok {
-  background: var(--pri);
-  border-color: var(--pri);
-  box-shadow: 0 0 10px rgba(236, 72, 153, 0.4);
-}
-.circ svg { opacity: 0; }
-.circ.ok svg { opacity: 1; }
-
-/* --- Penalty Counter --- */
-.pen-ctrl { display: flex; align-items: center; gap: 15px; margin-left: auto; }
-.pen-btn {
-  width: 36px;
-  height: 36px;
-  border-radius: 50%;
-  background: var(--sur2);
-  border: 2px solid var(--brd);
-  font-size: 1.2rem;
-  font-weight: 700;
-}
-.pen-btn.p { color: var(--pri); border-color: var(--pri); }
-.pen-btn.m { color: var(--red); border-color: var(--red); }
-.pen-num { font-size: 1.4rem; font-weight: 700; color: var(--red); min-width: 25px; text-align: center; }
-.pen-tot { font-size: 1rem; color: var(--red); font-weight: 700; }
-
-/* --- Bottom Score Bar --- */
-.score-bar {
-  position: fixed;
-  bottom: 0;
-  left: 0;
-  right: 0;
-  z-index: 200;
-  background: var(--sur);
-  border-top: 1px solid var(--brd);
-  padding: 15px 20px;
-  display: flex;
-  align-items: center;
-  gap: 20px;
-}
-.sc-disp { flex: 1; }
-.sc-lbl { font-size: 0.75rem; color: var(--txm); text-transform: uppercase; }
-.sc-val { font-size: 1.5rem; font-weight: 800; color: var(--pri); }
-.sc-bar { flex: 2; height: 10px; background: var(--sur2); border-radius: 5px; overflow: hidden; }
-.sc-fill { height: 100%; background: var(--pri); border-radius: 5px; box-shadow: 0 0 8px var(--pri); }
-.rst-btn {
-  padding: 8px 16px;
-  border-radius: 8px;
-  background: var(--sur2);
-  border: 1px solid var(--brd);
-  font-size: 0.8rem;
-  font-weight: 600;
-  color: var(--txm);
-}
-
-/* --- Toast Notification --- */
-.toast {
-  position: fixed;
-  bottom: 80px;
-  left: 50%;
-  transform: translateX(-50%);
-  background: #000;
-  border: 1px solid var(--pri);
-  padding: 10px 20px;
-  border-radius: 20px;
-  font-size: 0.9rem;
-  opacity: 0;
-  transition: opacity 0.2s;
-}
-.toast.show { opacity: 1; }
-</style>
-</head>
-<body>
-
-<!-- SETUP MODAL -->
-<div class="modal-bg" id="setupModal">
-  <div class="modal">
-    <h2>Welcome, Jacob!</h2>
-    <p>Enter the <strong>Family Code</strong> your parent gave you. You only need to do this once.</p>
-    <label for="famCodeInput">Family Code</label>
-    <input type="text" id="famCodeInput" placeholder="e.g. Smith2026" autocomplete="off">
-    <label for="dbUrlInput" style="margin-top:8px">Firebase DB URL</label>
-    <input type="text" id="dbUrlInput" placeholder="https://yourproject-rtdb.firebaseio.com">
-    <button class="btn-primary" onclick="saveSetup()">Let's Go!</button>
-    <p style="margin-top:12px;font-size:.75rem;color:var(--txm)">Ask your parent for both values if you don't have them.</p>
-  </div>
-</div>
-
-<header class="hdr">
-  <div class="hdr-l">
-    <div class="hdr-title">&#11088; Jacob's Chores</div>
-    <div class="hdr-sub" id="wkLbl">Week of: -</div>
-  </div>
-  <div class="hdr-r">
-    <span class="sync-dot" id="syncDot" title="Sync status"></span>
-    <button class="icon-btn" id="themeBtn" aria-label="Toggle theme">&#127769;</button>
-  </div>
-</header>
-
-<div class="week-row">
-  <span class="week-lbl">&#128197; Week:</span>
-  <input type="week" class="week-inp" id="wkPicker" aria-label="Select week">
-</div>
-
-<div class="toast" id="toast"></div>
-<div class="content" id="mainContent"></div>
-
-<div class="score-bar">
-  <div class="sc-disp">
-    <div class="sc-lbl">Weekly Points</div>
-    <div class="sc-val" id="scVal">0 pts</div>
-  </div>
-  <div class="sc-bar"><div class="sc-fill" id="scFill" style="width:0%"></div></div>
-  <button class="rst-btn" onclick="confirmReset()">Reset</button>
-</div>
-
-<script>
-
-const DAILY=[
-  {id:'ct',  name:'Clean the table',                pts:5},
-  {id:'dog', name:'Clean up after the dog',         pts:5},
-  {id:'shw', name:'Take a shower',                  pts:5},
-  {id:'wku', name:'Wake up by 10 AM',               pts:5},
-  {id:'bed', name:'Go to bed by 11 PM',             pts:5},
-];
-const SPEC=[
-  {id:'swl', name:'Sweep floor \u2013 living room',         pts:10},
-  {id:'swt', name:'Sweep under the table',                  pts:10},
-  {id:'swk', name:'Sweep the kitchen',                      pts:10},
-  {id:'dis', name:'Do the dishes (at least one side)',       pts:20},
-  {id:'cok', name:'Cook/Prepare meal for family',           pts:20,note:'Includes full cleanup'},
-  {id:'wsh', name:'Wash clothes',                           pts:15},
-  {id:'dry', name:'Dry clothes',                            pts:10},
-  {id:'clr', name:'Clean room',                             pts:10},
-  {id:'nof', name:'No clothes on floor',                    pts:10},
-  {id:'bsk', name:'Put clothes in basket',                  pts:10},
-];
-const WEEKLY=[
-  {id:'grs', name:'Cut the grass',                          pts:25},
-  {id:'trs', name:'Trash \u2013 clean, bin & curb',        pts:25,note:'Wed & Sun only \u2022 12.5 pts each if 2 kids share'},
-];
-const DASH=[
-  {id:'drd', name:'DoorDash / Uber Eats work day',          pts:50},
-];
-const ALL=[...DAILY,...SPEC,...WEEKLY,...DASH];
-const REWARDS=[
-  {icon:'\uD83D\uDCF6',name:'WiFi Password',pts:50,detail:'50 pts \u2192 WiFi password (next day)'},
-  {icon:'\uD83C\uDFAE',name:'Xbox \u2013 1 hour',pts:50,detail:'50 pts/hr \u2022 chores must be verified first'},
-  {icon:'\uD83C\uDF89',name:'Go out w/ friends/GF/party',pts:250,detail:'250 pts/week up to day of event'},
-];
-const MONETARY=[
-  {range:'500\u20131,500 pts',val:'$25'},
-  {range:'1,501\u20135,000 pts',val:'$50'},
-  {range:'5,001\u20137,500 pts',val:'$75'},
-  {range:'7,501+ pts',val:'$100'},
-];
-const DAYS=['Mon','Tue','Wed','Thu','Fri','Sat','Sun'];
-
-const CHILD = 'jacob';
-
-let DB_URL = localStorage.getItem('dbUrl_' + CHILD) || '';
-let FAM_CODE = localStorage.getItem('famCode_' + CHILD) || '';
-
-function dbPath(wk) {
-  return DB_URL + '/families/' + FAM_CODE + '/' + CHILD + '/' + wk + '.json';
-}
-
-let weekKey = '';
-let state = {chores:{}, penalty:0};
-let activeDay = todayIdx();
-let saveTimer = null;
-
-function todayIdx(){ const d=new Date().getDay(); return d===0?6:d-1; }
-
-function checkSetup() {
-  if (!FAM_CODE || !DB_URL) {
-    document.getElementById('setupModal').style.display='flex';
-  } else {
-    document.getElementById('setupModal').style.display='none';
-    init();
-  }
-}
-
-function saveSetup() {
-  const code = document.getElementById('famCodeInput').value.trim();
-  const url = document.getElementById('dbUrlInput').value.trim().replace(/\/+$/,'');
-  if (!code || !url) { alert('Please enter both the Family Code and Firebase DB URL.'); return; }
-  FAM_CODE = code; DB_URL = url;
-  localStorage.setItem('famCode_' + CHILD, FAM_CODE);
-  localStorage.setItem('dbUrl_' + CHILD, DB_URL);
-  document.getElementById('setupModal').style.display='none';
-  init();
-}
-
-function initWeek() {
-  const p = document.getElementById('wkPicker');
-  const t = new Date();
-  const yr = t.getFullYear();
-  const jan1 = new Date(yr,0,1);
-  const wk = Math.ceil(((t-jan1)/86400000+jan1.getDay()+1)/7);
-  p.value = yr + '-W' + String(wk).padStart(2,'0');
-  weekKey = p.value.replace('-W','_W');
-  updateWkLbl();
-  p.addEventListener('change', function() {
-    weekKey = p.value.replace('-W','_W');
-    updateWkLbl();
-    loadFromDB();
-  });
-}
-
-function updateWkLbl() {
-  const p = document.getElementById('wkPicker');
-  if (!p.value) return;
-  const parts = p.value.split('-W');
-  const yr = parseInt(parts[0]), wk = parseInt(parts[1]);
-  const jan1 = new Date(yr,0,1);
-  const mon = new Date(jan1.getTime()+(wk-1)*7*86400000);
-  const sun = new Date(mon.getTime()+6*86400000);
-  const f = function(d){ return d.toLocaleDateString('en-US',{month:'short',day:'numeric'}); };
-  document.getElementById('wkLbl').textContent = 'Week of ' + f(mon) + ' - ' + f(sun);
-}
-
-function init() {
-  initWeek();
-  ALL.forEach(function(ch){ state.chores[ch.id]=[0,0,0,0,0,0,0]; });
-  buildUI();
-  loadFromDB();
-}
-
-function setSyncStatus(s) {
-  const d = document.getElementById('syncDot');
-  d.className = 'sync-dot ' + s;
-}
-
-async function loadFromDB() {
-  if (!DB_URL || !FAM_CODE) return;
-  setSyncStatus('busy');
-  try {
-    const r = await fetch(dbPath(weekKey));
-    const data = await r.json();
-    if (data && data.chores) {
-      state.chores = data.chores;
-      state.penalty = data.penalty || 0;
-      ALL.forEach(function(ch){ if(!state.chores[ch.id]) state.chores[ch.id]=[0,0,0,0,0,0,0]; });
-    } else {
-      state = {chores:{}, penalty:0};
-      ALL.forEach(function(ch){ state.chores[ch.id]=[0,0,0,0,0,0,0]; });
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="default">
+  <meta name="apple-mobile-web-app-title" content="Jacob's Chores">
+  <title>Jacob's Chore Chart</title>
+  <link href="https://api.fontshare.com/v2/css?f[]=satoshi@400,500,700,800&display=swap" rel="stylesheet">
+  <style>
+    /* --- Global Styles & Theme Variables --- */
+    :root {
+      --font: 'Satoshi', -apple-system, sans-serif;
+      --bg: #121824;         /* Deep space dark background */
+      --sur: #1e2640;        /* Card backgrounds */
+      --sur2: #171e30;       /* Inside item backgrounds */
+      --brd: #2d3748;        /* Clean borders */
+      --div: rgba(255, 255, 255, 0.08);
+      --tx: #f3f4f6;         /* Crisp off-white text */
+      --txm: #9ca3af;        /* Soft gray secondary text */
+      
+      /* Vibrant Neon Accents */
+      --pri: #10b981;        /* Jacob's custom theme: Neon Green for daily chores */
+      --sph: #3b82f6;        /* Tech blue for specialty */
+      --wkh: #a855f7;        /* Purple for weekly */
+      --dbh: #f59e0b;        /* Amber for DoorDash/Uber */
+      --red: #ef4444;        /* Bright red for penalties */
+      --pur: #ec4899;        /* Pink/Purple for rewards */
+      --mon: #06b6d4;        /* Cyan for monetary rewards */
     }
-    setSyncStatus('ok');
-    refreshAll();
-  } catch(e) {
-    setSyncStatus('err');
-    toast('Could not load - check connection');
-  }
-}
 
-async function saveToDB() {
-  if (!DB_URL || !FAM_CODE) return;
-  setSyncStatus('busy');
-  try {
-    await fetch(dbPath(weekKey), {method:'PUT',headers:{'Content-Type':'application/json'},body:JSON.stringify(state)});
-    setSyncStatus('ok');
-  } catch(e) {
-    setSyncStatus('err');
-    toast('Save failed - check connection');
-  }
-}
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      font-family: var(--font);
+      background: var(--bg);
+      color: var(--tx);
+      min-height: 100dvh;
+      padding-bottom: 80px;
+    }
 
-function scheduleSave() { clearTimeout(saveTimer); saveTimer=setTimeout(saveToDB, 800); }
+    /* --- Setup Modal Overlay --- */
+    .modal-bg {
+      position: fixed;
+      top: 0; left: 0; width: 100%; height: 100%;
+      background: rgba(0,0,0,0.85);
+      z-index: 2000;
+      display: flex; align-items: center; justify-content: center;
+      padding: 20px;
+    }
+    .modal {
+      background: var(--sur);
+      border: 2px solid var(--brd);
+      border-radius: 20px;
+      padding: 30px;
+      width: 100%;
+      max-width: 450px;
+      box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+    }
+    .modal h2 { color: var(--pri); margin-bottom: 10px; font-weight: 800; }
+    .modal p { color: var(--txm); margin-bottom: 20px; font-size: 0.95rem; }
+    .modal label { display: block; font-size: 0.8rem; font-weight: 700; text-transform: uppercase; margin-bottom: 6px; color: var(--txm); }
+    .modal input { width: 100%; padding: 12px; background: var(--sur2); border: 1px solid var(--brd); color: #fff; border-radius: 8px; margin-bottom: 15px; outline: none; }
+    .modal input:focus { border-color: var(--pri); }
+    .btn-primary { width: 100%; padding: 14px; background: var(--pri); border: none; color: #121824; font-weight: 800; text-transform: uppercase; border-radius: 10px; cursor: pointer; transition: opacity 0.2s; }
+    .btn-primary:hover { opacity: 0.9; }
 
-function buildUI() {
-  const ct = document.getElementById('mainContent');
-  ct.innerHTML = '';
-  const ds = document.createElement('div'); ds.className='day-strip';
-  DAYS.forEach(function(d,i) {
-    const btn=document.createElement('button');
-    btn.className='daychip'+(i===activeDay?' sel':'');
-    btn.id='dc-'+i; btn.textContent=d;
-    btn.setAttribute('aria-label',d);
-    btn.addEventListener('click',function(){selDay(i);});
-    ds.appendChild(btn);
-  });
-  ct.appendChild(ds);
-  mkSec(ct,'Daily Chores (5 pts)','s-daily',DAILY,'5 pts each');
-  mkSec(ct,'Specialty Chores','s-spec',SPEC,'Bonus pts');
-  mkSec(ct,'Weekly Chores','s-week',WEEKLY,'Big pts');
-  mkSec(ct,'DoorDash / Uber Eats','s-dash',DASH,'50 pts/day');
+    /* --- Header --- */
+    .hdr {
+      position: sticky;
+      top: 0;
+      z-index: 100;
+      background: var(--sur);
+      border-bottom: 1px solid var(--brd);
+      padding: 15px 20px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+    .hdr-title {
+      font-size: 1.4rem;
+      font-weight: 800;
+      background: linear-gradient(45deg, #10b981, #3b82f6);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      text-transform: uppercase;
+    }
+    .hdr-sub { font-size: 0.8rem; color: var(--txm); font-weight: 700; margin-top: 2px; }
+    .hdr-r { display: flex; align-items: center; gap: 15px; }
+    .sync-dot { width: 10px; height: 10px; border-radius: 50%; background: var(--txm); }
+    .sync-dot.online { background: var(--pri); box-shadow: 0 0 8px var(--pri); }
+    .icon-btn { background: none; border: none; font-size: 1.2rem; cursor: pointer; color: var(--tx); }
 
-  const ps=document.createElement('div'); ps.className='sec s-pen';
-  ps.innerHTML='<div class="sec-hdr">Penalties <span>-15 pts each</span></div>';
-  const pi=document.createElement('div'); pi.className='pen-item';
-  pi.innerHTML='<div class="pen-lbl">Lying or not listening to parents</div><div class="pen-ctrl"><button class="pen-btn m" onclick="chgPen(-1)" aria-label="Remove">&#8722;</button><div class="pen-num" id="penNum">0</div><button class="pen-btn p" onclick="chgPen(1)" aria-label="Add">+</button><div class="pen-tot" id="penTot">0 pts</div></div>';
-  ps.appendChild(pi); ct.appendChild(ps);
+    /* --- Day Selector Strip --- */
+    .week-row { display: none; }
+    .day-strip {
+      display: flex;
+      gap: 10px;
+      padding: 15px 20px;
+      overflow-x: auto;
+      max-width: 650px;
+      margin: 0 auto;
+    }
+    .daychip {
+      flex: 1;
+      min-width: 52px;
+      padding: 12px 6px;
+      border-radius: 12px;
+      font-size: 0.85rem;
+      font-weight: 800;
+      background: var(--sur2);
+      border: 2px solid var(--brd);
+      color: var(--txm);
+      text-align: center;
+      cursor: pointer;
+      transition: all 0.2s ease;
+    }
+    .daychip.sel {
+      background: var(--pri);
+      border-color: var(--pri);
+      color: #121824;
+      transform: scale(1.05);
+    }
 
-  const rs=document.createElement('div'); rs.className='sec s-rew';
-  rs.innerHTML='<div class="sec-hdr">Rewards</div>';
-  const rb=document.createElement('div');
-  REWARDS.forEach(function(r) {
-    const row=document.createElement('div'); row.className='rew-item';
-    row.innerHTML='<div class="rew-icon">'+r.icon+'</div><div class="rew-info"><div class="rew-name">'+r.name+'</div><div class="rew-detail">'+r.detail+'</div></div><div class="rew-pts">'+r.pts+' pts</div>';
-    rb.appendChild(row);
-  });
-  rs.appendChild(rb); ct.appendChild(rs);
+    /* --- Content Sections & Cards --- */
+    .content { padding: 0 20px; display: flex; flex-direction: column; gap: 20px; max-width: 650px; margin: 0 auto; }
+    .sec {
+      background: var(--sur);
+      border-radius: 16px;
+      overflow: hidden;
+      border: 1px solid var(--brd);
+      box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+    }
+    .sec-hdr {
+      padding: 14px 20px;
+      font-weight: 800;
+      font-size: 0.95rem;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      display: flex;
+      justify-content: space-between;
+      background: rgba(255,255,255,0.03);
+      border-bottom: 1px solid var(--brd);
+    }
+    .sec-hdr span { font-size: 0.75rem; opacity: 0.7; }
 
-  const ms=document.createElement('div'); ms.className='sec s-mon';
-  ms.innerHTML='<div class="sec-hdr">Special Monetary Rewards</div>';
-  const mg=document.createElement('div'); mg.className='mgrid';
-  MONETARY.forEach(function(m) {
-    const mc=document.createElement('div'); mc.className='mcell';
-    mc.innerHTML='<div class="mrange">'+m.range+'</div><div class="mval">'+m.val+'</div>';
-    mg.appendChild(mc);
-  });
-  ms.appendChild(mg); ct.appendChild(ms);
+    /* Apply colors to section headings */
+    .s-daily .sec-hdr { color: var(--pri); }
+    .s-spec .sec-hdr { color: var(--sph); }
+    .s-week .sec-hdr { color: var(--wkh); }
+    .s-dash .sec-hdr { color: var(--dbh); }
+    .s-pen .sec-hdr { color: var(--red); }
+    .s-rew .sec-hdr { color: var(--pur); }
+    .s-mon .sec-hdr { color: var(--mon); }
 
-  const tc=document.createElement('div'); tc.className='tcard'; tc.id='totCard';
-  tc.innerHTML='<div class="thdr">Weekly Breakdown</div><div id="totBody"></div>';
-  ct.appendChild(tc);
-  updTotals();
-}
-
-function mkSec(ct,title,cls,chores,sub) {
-  const sec=document.createElement('div'); sec.className='sec '+cls;
-  sec.innerHTML='<div class="sec-hdr">'+title+' <span>'+sub+'</span></div>';
-  const lst=document.createElement('div'); lst.className='clist';
-  chores.forEach(function(ch) {
-    const item=document.createElement('div'); item.className='citem';
-    item.innerHTML='<div class="cinfo"><div class="cname">'+ch.name+'</div>'+(ch.note?'<div class="cnote">'+ch.note+'</div>':'')+'</div><div class="cpts">+'+ch.pts+'</div><button class="cchk" onclick="tog(''+ch.id+'','+ch.pts+')" aria-label="Mark done"><div class="circ" id="circ-'+ch.id+'"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg></div></button>';
-    lst.appendChild(item);
-  });
-  sec.appendChild(lst); ct.appendChild(sec);
-}
-
-function selDay(i) {
-  activeDay=i;
-  DAYS.forEach(function(_,j) {
-    const el=document.getElementById('dc-'+j);
-    if(el) el.className='daychip'+(j===i?' sel':'');
-  });
-  refreshAll();
-}
-
-function refreshAll() {
-  ALL.forEach(function(ch) {
-    const el=document.getElementById('circ-'+ch.id);
-    if(el) el.className='circ'+((state.chores[ch.id]||[])[activeDay]?' ok':'');
-  });
-  const p=state.penalty||0;
-  const pn=document.getElementById('penNum'); if(pn) pn.textContent=p;
-  const pt=document.getElementById('penTot'); if(pt) pt.textContent='-'+(p*15)+' pts';
-  updTotals();
-}
-
-function tog(id,pts) {
-  if(!state.chores[id]) state.chores[id]=[0,0,0,0,0,0,0];
-  state.chores[id][activeDay] = state.chores[id][activeDay] ? 0 : 1;
-  const done=state.chores[id][activeDay];
-  const el=document.getElementById('circ-'+id);
-  if(el) el.className='circ'+(done?' ok':'');
-  toast(done?'+'+pts+' pts earned!':'Chore unchecked');
-  updTotals(); scheduleSave();
-}
-
-function chgPen(delta) {
-  state.penalty=Math.max(0,(state.penalty||0)+delta);
-  const p=state.penalty;
-  const pn=document.getElementById('penNum'); if(pn) pn.textContent=p;
-  const pt=document.getElementById('penTot'); if(pt) pt.textContent='-'+(p*15)+' pts';
-  if(delta>0) toast('-15 pts penalty applied');
-  updTotals(); scheduleSave();
-}
-
-function calcScore() {
-  let t=0;
-  ALL.forEach(function(ch){ (state.chores[ch.id]||[]).forEach(function(v){if(v)t+=ch.pts;}); });
-  t-=(state.penalty||0)*15;
-  return t;
-}
-
-function updTotals() {
-  const score=calcScore();
-  const sv=document.getElementById('scVal'); if(sv) sv.textContent=score+' pts';
-  const sf=document.getElementById('scFill'); if(sf) sf.style.width=Math.min(100,Math.max(0,score/3000*100))+'%';
-  const body=document.getElementById('totBody'); if(!body) return;
-  const secs=[
-    {label:'Daily Chores',chores:DAILY},
-    {label:'Specialty Chores',chores:SPEC},
-    {label:'Weekly Chores',chores:WEEKLY},
-    {label:'DoorDash/Uber',chores:DASH},
-  ];
-  let rows=''; let grand=0;
-  secs.forEach(function(sec) {
-    let sub=0;
-    sec.chores.forEach(function(ch){ (state.chores[ch.id]||[]).forEach(function(v){if(v)sub+=ch.pts;}); });
-    grand+=sub;
-    if(sub>0) rows+='<div class="trow"><span>'+sec.label+'</span><span class="tp">+'+sub+'</span></div>';
-  });
-  const pen=(state.penalty||0)*15; grand-=pen;
-  if(pen>0) rows+='<div class="trow"><span>Penalties</span><span class="tn">-'+pen+'</span></div>';
-  rows+='<div class="trow"><span>Total This Week</span><span class="'+(grand>=0?'tp':'tn')+'">'+grand+' pts</span></div>';
-  body.innerHTML=rows;
-}
-
-function confirmReset() {
-  if(confirm('Reset all chores for this week?')) {
-    ALL.forEach(function(ch){ state.chores[ch.id]=[0,0,0,0,0,0,0]; });
-    state.penalty=0;
-    refreshAll(); scheduleSave(); toast('Chart reset');
-  }
-}
-
-var tTimer;
-function toast(msg) {
-  var t=document.getElementById('toast');
-  t.textContent=msg; t.classList.add('show');
-  clearTimeout(tTimer); tTimer=setTimeout(function(){t.classList.remove('show');},1800);
-}
-
-(function() {
-  var btn=document.getElementById('themeBtn');
-  var html=document.documentElement;
-  var dark=window.matchMedia('(prefers-color-scheme: dark)').matches;
-  html.setAttribute('data-theme',dark?'dark':'light');
-  btn.innerHTML=dark?'&#9728;&#65039;':'&#127769;';
-  btn.addEventListener('click',function(){
-    dark=!dark; html.setAttribute('data-theme',dark?'dark':'light');
-    btn.innerHTML=dark?'&#9728;&#65039;':'&#127769;';
-  });
-})();
-
-checkSetup();
-</script>
-</body>
-</html>
+    /* --- Chore List Items --- */
+    .c
