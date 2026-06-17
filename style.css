@@ -1,0 +1,169 @@
+/* --- Global Styles & Theme Variables --- */
+:root {
+  --bg-color: #121824;       /* Deep space dark background */
+  --card-bg: #1e2640;        /* Slightly lighter dark for contrast */
+  --text-main: #f3f4f6;      /* Crisp off-white text */
+  --text-muted: #9ca3af;     /* Soft gray for secondary text */
+  
+  /* Vibrant Neon Accents */
+  --accent-purple: #a855f7;  /* High-energy purple */
+  --accent-blue: #3b82f6;    /* Tech/Gaming blue */
+  --accent-green: #10b981;   /* Success neon green */
+  --accent-hover: #2563eb;   /* Button hover state */
+}
+
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+}
+
+body {
+  background-color: var(--bg-color);
+  color: var(--text-main);
+  line-height: 1.6;
+  padding: 20px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  min-height: 100vh;
+}
+
+/* --- Layout Container --- */
+.container {
+  width: 100%;
+  max-width: 600px;
+  margin-top: 20px;
+}
+
+/* --- Headers & Titles --- */
+h1 {
+  font-size: 2.5rem;
+  font-weight: 800;
+  text-align: center;
+  margin-bottom: 10px;
+  background: linear-gradient(45deg, var(--accent-purple), var(--accent-blue));
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+}
+
+h2 {
+  font-size: 1.5rem;
+  color: var(--accent-purple);
+  margin-bottom: 20px;
+  text-align: center;
+}
+
+/* --- Dashboard Navigation & Cards --- */
+.card {
+  background-color: var(--card-bg);
+  border: 2px solid #2d3748;
+  border-radius: 16px;
+  padding: 20px;
+  margin-bottom: 20px;
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
+  transition: transform 0.2s ease, border-color 0.2s ease;
+}
+
+.card:hover {
+  transform: translateY(-4px);
+  border-color: var(--accent-blue);
+}
+
+/* --- Chore Checklists --- */
+ul {
+  list-style: none;
+}
+
+li {
+  background-color: #171e30;
+  padding: 15px;
+  border-radius: 12px;
+  margin-bottom: 12px;
+  display: flex;
+  align-items: center;
+  gap: 15px;
+  border-left: 5px solid var(--accent-blue);
+  font-size: 1.1rem;
+}
+
+/* Stylized Checkboxes */
+input[type="checkbox"] {
+  appearance: none;
+  -webkit-appearance: none;
+  height: 24px;
+  width: 24px;
+  background-color: #2d3748;
+  border-radius: 6px;
+  cursor: pointer;
+  display: inline-block;
+  position: relative;
+  transition: all 0.2s ease;
+}
+
+input[type="checkbox"]:checked {
+  background-color: var(--accent-green);
+}
+
+input[type="checkbox"]:checked::after {
+  content: '✓';
+  position: absolute;
+  color: white;
+  font-size: 16px;
+  font-weight: bold;
+  left: 6px;
+  top: 0px;
+}
+
+/* Strikethrough text when checked */
+li:has(input[type="checkbox"]:checked) {
+  text-decoration: line-through;
+  color: var(--text-muted);
+  border-left-color: var(--accent-green);
+  opacity: 0.7;
+}
+
+/* --- Buttons & Profile Links --- */
+a.btn, button {
+  display: block;
+  text-align: center;
+  background: linear-gradient(135deg, var(--accent-blue), #1d4ed8);
+  color: white;
+  padding: 14px 28px;
+  border-radius: 12px;
+  text-decoration: none;
+  font-weight: bold;
+  font-size: 1.1rem;
+  border: none;
+  cursor: pointer;
+  transition: background 0.2s ease, transform 0.1s ease;
+  box-shadow: 0 4px 10px rgba(59, 130, 246, 0.3);
+}
+
+a.btn:hover, button:hover {
+  background: linear-gradient(135deg, #2563eb, #1e40af);
+  transform: scale(1.02);
+}
+
+a.btn-back {
+  background: transparent;
+  color: var(--text-muted);
+  border: 2px solid #2d3748;
+  margin-top: 20px;
+  box-shadow: none;
+}
+
+a.btn-back:hover {
+  background: #2d3748;
+  color: white;
+}
+Scroll down and click Commit changes... to save it.
+
+Step 2: Link the CSS to Your HTML Pages
+To make this styling actually take effect, you need to open each of your HTML files (index.html, ethan.html, jacob.html, mia.html, and parent.html), click the pencil icon to edit them, and paste this exact line inside the <head> section of each page:
+
+HTML
+<link rel="stylesheet" href="style.css">
