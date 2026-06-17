@@ -1,0 +1,525 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="default">
+<meta name="apple-mobile-web-app-title" content="Mia's Chores">
+<title>Mia's Chore Chart</title>
+<link href="https://api.fontshare.com/v2/css?f[]=satoshi@400,500,700&display=swap" rel="stylesheet">
+<style>
+
+:root{
+  --font:'Satoshi',-apple-system,sans-serif;
+  --tx-xs:.75rem;--tx-sm:.9rem;--tx-base:1rem;--tx-lg:1.2rem;--tx-xl:1.6rem;
+  --sp1:.25rem;--sp2:.5rem;--sp3:.75rem;--sp4:1rem;--sp5:1.25rem;--sp6:1.5rem;
+  --r-sm:.375rem;--r-md:.5rem;--r-lg:.75rem;--r-xl:1rem;--r-full:9999px;
+  --tr:180ms cubic-bezier(.16,1,.3,1);
+  --sh:0 1px 3px rgba(0,0,0,.07),0 1px 2px rgba(0,0,0,.05);
+  --sh-md:0 4px 12px rgba(0,0,0,.09);
+}
+[data-theme=light]{
+  --bg:#f6f5f1;--sur:#fff;--sur2:#f4f3ef;--brd:rgba(0,0,0,.1);--div:rgba(0,0,0,.07);
+  --tx:#1a1a18;--txm:#6b6a67;--txf:#aaa9a5;
+  --pri:#1a6ea8;--prl:#ddeeff;
+  --grn:#196B24;--grl:#e2f0d9;
+  --orn:#9E480E;--orl:#fce5d4;
+  --red:#C00000;--rdl:#ffd7d7;
+  --pur:#5C2D91;--pul:#e9d5ff;
+  --sph:#375623;--spl:#e2efda;
+  --wkh:#7F6000;--wkl:#fff2cc;
+  --dbh:#833C00;--dbl:#fce4d6;
+  --mon:#4A4000;--mol:#fff9c4;
+  --gld:#d4a820;--gll:#fff2cc;
+}
+[data-theme=dark]{
+  --bg:#141413;--sur:#1c1b19;--sur2:#222120;--brd:rgba(255,255,255,.1);--div:rgba(255,255,255,.06);
+  --tx:#e0dfdc;--txm:#8a8986;--txf:#555450;
+  --pri:#4f98c8;--prl:#1a3650;
+  --grn:#4fa347;--grl:#1a3520;
+  --orn:#c97040;--orl:#3a1f0a;
+  --red:#e05555;--rdl:#3a1010;
+  --pur:#9b5cd4;--pul:#2a1850;
+  --sph:#6daa45;--spl:#1a3010;
+  --wkh:#d4a820;--wkl:#3a3210;
+  --dbh:#c97040;--dbl:#3a1a0a;
+  --mon:#c4a830;--mol:#3a3010;
+  --gld:#d4a820;--gll:#3a3210;
+}
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+html{-webkit-text-size-adjust:none;scroll-behavior:smooth}
+body{font-family:var(--font);font-size:var(--tx-base);background:var(--bg);color:var(--tx);min-height:100dvh;padding-bottom:calc(var(--sp6) + env(safe-area-inset-bottom));-webkit-tap-highlight-color:transparent}
+button{cursor:pointer;font:inherit;border:none;background:none;color:inherit}
+input,select{font:inherit}
+/* header */
+.hdr{position:sticky;top:0;z-index:100;background:var(--sur);border-bottom:1px solid var(--div);padding:var(--sp3) var(--sp4);display:flex;align-items:center;justify-content:space-between;box-shadow:var(--sh)}
+.hdr-l{display:flex;flex-direction:column;gap:2px}
+.hdr-title{font-size:var(--tx-lg);font-weight:700}
+.hdr-sub{font-size:var(--tx-xs);color:var(--txm)}
+.hdr-r{display:flex;align-items:center;gap:var(--sp2)}
+.icon-btn{width:40px;height:40px;border-radius:var(--r-full);display:flex;align-items:center;justify-content:center;background:var(--sur2);border:1px solid var(--brd);font-size:1.1rem;transition:background var(--tr)}
+.icon-btn:active{transform:scale(.93)}
+/* week row */
+.week-row{display:flex;align-items:center;gap:var(--sp3);padding:var(--sp2) var(--sp4);background:var(--sur);border-bottom:1px solid var(--div)}
+.week-lbl{font-size:var(--tx-xs);color:var(--txm);white-space:nowrap}
+.week-inp{flex:1;font-size:var(--tx-sm);padding:var(--sp2) var(--sp3);border:1px solid var(--brd);border-radius:var(--r-md);background:var(--sur2);color:var(--tx)}
+.week-inp:focus{outline:2px solid var(--pri);outline-offset:2px}
+/* content */
+.content{padding:var(--sp4);display:flex;flex-direction:column;gap:var(--sp5)}
+/* day strip */
+.day-strip{display:flex;gap:var(--sp2);overflow-x:auto;scrollbar-width:none;padding-bottom:4px}
+.day-strip::-webkit-scrollbar{display:none}
+.daychip{flex-shrink:0;min-width:46px;padding:var(--sp2);border-radius:var(--r-md);font-size:var(--tx-xs);font-weight:700;text-align:center;border:2px solid var(--brd);background:var(--sur2);color:var(--txm);transition:all var(--tr)}
+/* section */
+.sec{border-radius:var(--r-xl);overflow:hidden;box-shadow:var(--sh)}
+.sec-hdr{padding:var(--sp3) var(--sp4);font-weight:700;font-size:var(--tx-sm);display:flex;align-items:center;justify-content:space-between;color:#fff}
+.sec-hdr span{opacity:.8;font-size:var(--tx-xs);font-weight:500}
+.s-daily .sec-hdr{background:var(--pri)}
+.s-spec  .sec-hdr{background:var(--sph)}
+.s-week  .sec-hdr{background:var(--wkh)}
+.s-dash  .sec-hdr{background:var(--dbh)}
+.s-pen   .sec-hdr{background:var(--red)}
+.s-rew   .sec-hdr{background:var(--pur)}
+.s-mon   .sec-hdr{background:var(--mon)}
+/* chore item */
+.clist{background:var(--sur)}
+.citem{display:flex;align-items:stretch;border-bottom:1px solid var(--div);min-height:58px}
+.citem:last-child{border-bottom:none}
+.cinfo{flex:1;padding:var(--sp3);display:flex;flex-direction:column;justify-content:center;gap:2px}
+.cname{font-size:var(--tx-sm);font-weight:500;line-height:1.3}
+.cnote{font-size:var(--tx-xs);color:var(--txm)}
+.cpts{display:flex;align-items:center;justify-content:center;min-width:50px;padding:0 var(--sp2);font-weight:700;font-size:var(--tx-sm);border-left:1px solid var(--div);color:var(--sph)}
+.cpts.neg{color:var(--red)}
+.cchk{display:flex;align-items:center;justify-content:center;width:58px;min-height:58px;border-left:1px solid var(--div)}
+.circ{width:34px;height:34px;border-radius:var(--r-full);border:2.5px solid var(--brd);display:flex;align-items:center;justify-content:center;transition:all var(--tr);background:var(--sur2)}
+.circ.ok{background:var(--sph);border-color:var(--sph)}
+.circ svg{opacity:0;transition:opacity var(--tr)}
+.circ.ok svg{opacity:1}
+.cchk:active .circ{transform:scale(.85)}
+/* penalty */
+.pen-item{display:flex;align-items:center;gap:var(--sp3);padding:var(--sp3) var(--sp4);background:var(--sur);flex-wrap:wrap}
+.pen-lbl{flex:1;font-size:var(--tx-sm);font-weight:500;min-width:140px}
+.pen-ctrl{display:flex;align-items:center;gap:var(--sp3)}
+.pen-btn{width:40px;height:40px;border-radius:var(--r-full);font-size:1.3rem;font-weight:700;display:flex;align-items:center;justify-content:center;border:2px solid var(--brd);background:var(--sur2);transition:all var(--tr)}
+.pen-btn.m{border-color:var(--red);color:var(--red)}
+.pen-btn.p{border-color:var(--sph);color:var(--sph)}
+.pen-btn:active{transform:scale(.88)}
+.pen-num{font-size:var(--tx-xl);font-weight:700;color:var(--red);min-width:36px;text-align:center}
+.pen-tot{font-size:var(--tx-sm);color:var(--red);font-weight:700}
+/* rewards */
+.rew-item{display:flex;align-items:center;gap:var(--sp3);padding:var(--sp3) var(--sp4);border-bottom:1px solid var(--div);background:var(--sur)}
+.rew-item:last-child{border-bottom:none}
+.rew-icon{font-size:1.4rem}
+.rew-info{flex:1}
+.rew-name{font-size:var(--tx-sm);font-weight:600}
+.rew-detail{font-size:var(--tx-xs);color:var(--txm)}
+.rew-pts{font-size:var(--tx-sm);font-weight:700;color:var(--pur)}
+/* monetary */
+.mgrid{background:var(--sur);display:grid;grid-template-columns:1fr 1fr}
+.mcell{padding:var(--sp3) var(--sp4);border-bottom:1px solid var(--div);display:flex;flex-direction:column;gap:2px}
+.mcell:nth-child(odd){border-right:1px solid var(--div)}
+.mrange{font-size:var(--tx-xs);color:var(--txm)}
+.mval{font-size:var(--tx-lg);font-weight:700;color:var(--sph)}
+/* totals card */
+.tcard{background:var(--sur);border-radius:var(--r-xl);padding:var(--sp4);box-shadow:var(--sh)}
+.thdr{font-size:var(--tx-xs);font-weight:700;text-transform:uppercase;letter-spacing:.05em;color:var(--txm);margin-bottom:var(--sp3)}
+.trow{display:flex;justify-content:space-between;align-items:center;padding:var(--sp2) 0;border-bottom:1px solid var(--div);font-size:var(--tx-sm)}
+.trow:last-child{border-bottom:none;font-weight:700;font-size:var(--tx-base)}
+.tp{color:var(--sph);font-weight:600}.tn{color:var(--red);font-weight:600}
+/* score bar */
+.score-bar{position:sticky;bottom:0;z-index:90;background:var(--sur);border-top:1px solid var(--div);padding:var(--sp3) var(--sp4);padding-bottom:calc(var(--sp3) + env(safe-area-inset-bottom));box-shadow:0 -4px 16px rgba(0,0,0,.07);display:flex;align-items:center;gap:var(--sp4)}
+.sc-disp{display:flex;flex-direction:column;gap:2px;flex:1}
+.sc-lbl{font-size:var(--tx-xs);color:var(--txm)}
+.sc-val{font-size:var(--tx-xl);font-weight:700;line-height:1}
+.sc-bar{flex:2;height:8px;border-radius:var(--r-full);background:var(--sur2);overflow:hidden}
+.sc-fill{height:100%;border-radius:var(--r-full);transition:width .4s ease}
+.rst-btn{padding:var(--sp2) var(--sp4);border-radius:var(--r-lg);background:var(--sur2);border:1px solid var(--brd);font-size:var(--tx-xs);font-weight:600;color:var(--txm);transition:all var(--tr)}
+.rst-btn:active{transform:scale(.95)}
+/* sync status */
+.sync-dot{width:8px;height:8px;border-radius:50%;background:var(--txf);display:inline-block;margin-right:4px;transition:background .3s}
+.sync-dot.ok{background:#22c55e}
+.sync-dot.err{background:var(--red)}
+.sync-dot.busy{background:var(--gld);animation:pulse .8s infinite}
+@keyframes pulse{0%,100%{opacity:1}50%{opacity:.4}}
+/* toast */
+.toast{position:fixed;bottom:90px;left:50%;transform:translateX(-50%) translateY(10px);background:#1a1a18;color:#fff;font-size:var(--tx-sm);font-weight:500;padding:var(--sp2) var(--sp5);border-radius:var(--r-full);box-shadow:var(--sh-md);opacity:0;pointer-events:none;transition:opacity .25s,transform .25s;white-space:nowrap;z-index:200}
+.toast.show{opacity:1;transform:translateX(-50%) translateY(0)}
+/* setup modal */
+.modal-bg{position:fixed;inset:0;background:rgba(0,0,0,.6);z-index:500;display:flex;align-items:center;justify-content:center;padding:var(--sp4)}
+.modal{background:var(--sur);border-radius:var(--r-xl);padding:var(--sp6);width:100%;max-width:400px;box-shadow:var(--sh-md)}
+.modal h2{font-size:var(--tx-lg);font-weight:700;margin-bottom:var(--sp2)}
+.modal p{font-size:var(--tx-sm);color:var(--txm);margin-bottom:var(--sp5);line-height:1.5}
+.modal label{font-size:var(--tx-sm);font-weight:600;display:block;margin-bottom:var(--sp2)}
+.modal input{width:100%;padding:var(--sp3) var(--sp4);border:1px solid var(--brd);border-radius:var(--r-md);background:var(--sur2);color:var(--tx);font-size:var(--tx-base);margin-bottom:var(--sp4)}
+.modal input:focus{outline:2px solid var(--pri);outline-offset:2px}
+.btn-primary{width:100%;padding:var(--sp3) var(--sp4);border-radius:var(--r-lg);background:var(--pri);color:#fff;font-weight:700;font-size:var(--tx-base);transition:all var(--tr)}
+.btn-primary:active{transform:scale(.97)}
+.btn-danger{background:var(--red)}
+
+.daychip.sel{border-color:#9E480E;color:#9E480E;background:#fce5d4}
+.sc-val{color:#9E480E}
+.sc-fill{background:#9E480E}
+</style>
+</head>
+<body>
+
+<!-- SETUP MODAL -->
+<div class="modal-bg" id="setupModal">
+  <div class="modal">
+    <h2>Welcome, Mia!</h2>
+    <p>Enter the <strong>Family Code</strong> your parent gave you. You only need to do this once.</p>
+    <label for="famCodeInput">Family Code</label>
+    <input type="text" id="famCodeInput" placeholder="e.g. Smith2026" autocomplete="off">
+    <label for="dbUrlInput" style="margin-top:8px">Firebase DB URL</label>
+    <input type="text" id="dbUrlInput" placeholder="https://yourproject-rtdb.firebaseio.com">
+    <button class="btn-primary" onclick="saveSetup()">Let's Go!</button>
+    <p style="margin-top:12px;font-size:.75rem;color:var(--txm)">Ask your parent for both values if you don't have them.</p>
+  </div>
+</div>
+
+<header class="hdr">
+  <div class="hdr-l">
+    <div class="hdr-title">&#11088; Mia's Chores</div>
+    <div class="hdr-sub" id="wkLbl">Week of: -</div>
+  </div>
+  <div class="hdr-r">
+    <span class="sync-dot" id="syncDot" title="Sync status"></span>
+    <button class="icon-btn" id="themeBtn" aria-label="Toggle theme">&#127769;</button>
+  </div>
+</header>
+
+<div class="week-row">
+  <span class="week-lbl">&#128197; Week:</span>
+  <input type="week" class="week-inp" id="wkPicker" aria-label="Select week">
+</div>
+
+<div class="toast" id="toast"></div>
+<div class="content" id="mainContent"></div>
+
+<div class="score-bar">
+  <div class="sc-disp">
+    <div class="sc-lbl">Weekly Points</div>
+    <div class="sc-val" id="scVal">0 pts</div>
+  </div>
+  <div class="sc-bar"><div class="sc-fill" id="scFill" style="width:0%"></div></div>
+  <button class="rst-btn" onclick="confirmReset()">Reset</button>
+</div>
+
+<script>
+
+const DAILY=[
+  {id:'ct',  name:'Clean the table',                pts:5},
+  {id:'dog', name:'Clean up after the dog',         pts:5},
+  {id:'shw', name:'Take a shower',                  pts:5},
+  {id:'wku', name:'Wake up by 10 AM',               pts:5},
+  {id:'bed', name:'Go to bed by 11 PM',             pts:5},
+];
+const SPEC=[
+  {id:'swl', name:'Sweep floor \u2013 living room',         pts:10},
+  {id:'swt', name:'Sweep under the table',                  pts:10},
+  {id:'swk', name:'Sweep the kitchen',                      pts:10},
+  {id:'dis', name:'Do the dishes (at least one side)',       pts:20},
+  {id:'cok', name:'Cook/Prepare meal for family',           pts:20,note:'Includes full cleanup'},
+  {id:'wsh', name:'Wash clothes',                           pts:15},
+  {id:'dry', name:'Dry clothes',                            pts:10},
+  {id:'clr', name:'Clean room',                             pts:10},
+  {id:'nof', name:'No clothes on floor',                    pts:10},
+  {id:'bsk', name:'Put clothes in basket',                  pts:10},
+];
+const WEEKLY=[
+  {id:'grs', name:'Cut the grass',                          pts:25},
+  {id:'trs', name:'Trash \u2013 clean, bin & curb',        pts:25,note:'Wed & Sun only \u2022 12.5 pts each if 2 kids share'},
+];
+const DASH=[
+  {id:'drd', name:'DoorDash / Uber Eats work day',          pts:50},
+];
+const ALL=[...DAILY,...SPEC,...WEEKLY,...DASH];
+const REWARDS=[
+  {icon:'\uD83D\uDCF6',name:'WiFi Password',pts:50,detail:'50 pts \u2192 WiFi password (next day)'},
+  {icon:'\uD83C\uDFAE',name:'Xbox \u2013 1 hour',pts:50,detail:'50 pts/hr \u2022 chores must be verified first'},
+  {icon:'\uD83C\uDF89',name:'Go out w/ friends/GF/party',pts:250,detail:'250 pts/week up to day of event'},
+];
+const MONETARY=[
+  {range:'500\u20131,500 pts',val:'$25'},
+  {range:'1,501\u20135,000 pts',val:'$50'},
+  {range:'5,001\u20137,500 pts',val:'$75'},
+  {range:'7,501+ pts',val:'$100'},
+];
+const DAYS=['Mon','Tue','Wed','Thu','Fri','Sat','Sun'];
+
+const CHILD = 'mia';
+
+let DB_URL = localStorage.getItem('dbUrl_' + CHILD) || '';
+let FAM_CODE = localStorage.getItem('famCode_' + CHILD) || '';
+
+function dbPath(wk) {
+  return DB_URL + '/families/' + FAM_CODE + '/' + CHILD + '/' + wk + '.json';
+}
+
+let weekKey = '';
+let state = {chores:{}, penalty:0};
+let activeDay = todayIdx();
+let saveTimer = null;
+
+function todayIdx(){ const d=new Date().getDay(); return d===0?6:d-1; }
+
+function checkSetup() {
+  if (!FAM_CODE || !DB_URL) {
+    document.getElementById('setupModal').style.display='flex';
+  } else {
+    document.getElementById('setupModal').style.display='none';
+    init();
+  }
+}
+
+function saveSetup() {
+  const code = document.getElementById('famCodeInput').value.trim();
+  const url = document.getElementById('dbUrlInput').value.trim().replace(/\/+$/,'');
+  if (!code || !url) { alert('Please enter both the Family Code and Firebase DB URL.'); return; }
+  FAM_CODE = code; DB_URL = url;
+  localStorage.setItem('famCode_' + CHILD, FAM_CODE);
+  localStorage.setItem('dbUrl_' + CHILD, DB_URL);
+  document.getElementById('setupModal').style.display='none';
+  init();
+}
+
+function initWeek() {
+  const p = document.getElementById('wkPicker');
+  const t = new Date();
+  const yr = t.getFullYear();
+  const jan1 = new Date(yr,0,1);
+  const wk = Math.ceil(((t-jan1)/86400000+jan1.getDay()+1)/7);
+  p.value = yr + '-W' + String(wk).padStart(2,'0');
+  weekKey = p.value.replace('-W','_W');
+  updateWkLbl();
+  p.addEventListener('change', function() {
+    weekKey = p.value.replace('-W','_W');
+    updateWkLbl();
+    loadFromDB();
+  });
+}
+
+function updateWkLbl() {
+  const p = document.getElementById('wkPicker');
+  if (!p.value) return;
+  const parts = p.value.split('-W');
+  const yr = parseInt(parts[0]), wk = parseInt(parts[1]);
+  const jan1 = new Date(yr,0,1);
+  const mon = new Date(jan1.getTime()+(wk-1)*7*86400000);
+  const sun = new Date(mon.getTime()+6*86400000);
+  const f = function(d){ return d.toLocaleDateString('en-US',{month:'short',day:'numeric'}); };
+  document.getElementById('wkLbl').textContent = 'Week of ' + f(mon) + ' - ' + f(sun);
+}
+
+function init() {
+  initWeek();
+  ALL.forEach(function(ch){ state.chores[ch.id]=[0,0,0,0,0,0,0]; });
+  buildUI();
+  loadFromDB();
+}
+
+function setSyncStatus(s) {
+  const d = document.getElementById('syncDot');
+  d.className = 'sync-dot ' + s;
+}
+
+async function loadFromDB() {
+  if (!DB_URL || !FAM_CODE) return;
+  setSyncStatus('busy');
+  try {
+    const r = await fetch(dbPath(weekKey));
+    const data = await r.json();
+    if (data && data.chores) {
+      state.chores = data.chores;
+      state.penalty = data.penalty || 0;
+      ALL.forEach(function(ch){ if(!state.chores[ch.id]) state.chores[ch.id]=[0,0,0,0,0,0,0]; });
+    } else {
+      state = {chores:{}, penalty:0};
+      ALL.forEach(function(ch){ state.chores[ch.id]=[0,0,0,0,0,0,0]; });
+    }
+    setSyncStatus('ok');
+    refreshAll();
+  } catch(e) {
+    setSyncStatus('err');
+    toast('Could not load - check connection');
+  }
+}
+
+async function saveToDB() {
+  if (!DB_URL || !FAM_CODE) return;
+  setSyncStatus('busy');
+  try {
+    await fetch(dbPath(weekKey), {method:'PUT',headers:{'Content-Type':'application/json'},body:JSON.stringify(state)});
+    setSyncStatus('ok');
+  } catch(e) {
+    setSyncStatus('err');
+    toast('Save failed - check connection');
+  }
+}
+
+function scheduleSave() { clearTimeout(saveTimer); saveTimer=setTimeout(saveToDB, 800); }
+
+function buildUI() {
+  const ct = document.getElementById('mainContent');
+  ct.innerHTML = '';
+  const ds = document.createElement('div'); ds.className='day-strip';
+  DAYS.forEach(function(d,i) {
+    const btn=document.createElement('button');
+    btn.className='daychip'+(i===activeDay?' sel':'');
+    btn.id='dc-'+i; btn.textContent=d;
+    btn.setAttribute('aria-label',d);
+    btn.addEventListener('click',function(){selDay(i);});
+    ds.appendChild(btn);
+  });
+  ct.appendChild(ds);
+  mkSec(ct,'Daily Chores (5 pts)','s-daily',DAILY,'5 pts each');
+  mkSec(ct,'Specialty Chores','s-spec',SPEC,'Bonus pts');
+  mkSec(ct,'Weekly Chores','s-week',WEEKLY,'Big pts');
+  mkSec(ct,'DoorDash / Uber Eats','s-dash',DASH,'50 pts/day');
+
+  const ps=document.createElement('div'); ps.className='sec s-pen';
+  ps.innerHTML='<div class="sec-hdr">Penalties <span>-15 pts each</span></div>';
+  const pi=document.createElement('div'); pi.className='pen-item';
+  pi.innerHTML='<div class="pen-lbl">Lying or not listening to parents</div><div class="pen-ctrl"><button class="pen-btn m" onclick="chgPen(-1)" aria-label="Remove">&#8722;</button><div class="pen-num" id="penNum">0</div><button class="pen-btn p" onclick="chgPen(1)" aria-label="Add">+</button><div class="pen-tot" id="penTot">0 pts</div></div>';
+  ps.appendChild(pi); ct.appendChild(ps);
+
+  const rs=document.createElement('div'); rs.className='sec s-rew';
+  rs.innerHTML='<div class="sec-hdr">Rewards</div>';
+  const rb=document.createElement('div');
+  REWARDS.forEach(function(r) {
+    const row=document.createElement('div'); row.className='rew-item';
+    row.innerHTML='<div class="rew-icon">'+r.icon+'</div><div class="rew-info"><div class="rew-name">'+r.name+'</div><div class="rew-detail">'+r.detail+'</div></div><div class="rew-pts">'+r.pts+' pts</div>';
+    rb.appendChild(row);
+  });
+  rs.appendChild(rb); ct.appendChild(rs);
+
+  const ms=document.createElement('div'); ms.className='sec s-mon';
+  ms.innerHTML='<div class="sec-hdr">Special Monetary Rewards</div>';
+  const mg=document.createElement('div'); mg.className='mgrid';
+  MONETARY.forEach(function(m) {
+    const mc=document.createElement('div'); mc.className='mcell';
+    mc.innerHTML='<div class="mrange">'+m.range+'</div><div class="mval">'+m.val+'</div>';
+    mg.appendChild(mc);
+  });
+  ms.appendChild(mg); ct.appendChild(ms);
+
+  const tc=document.createElement('div'); tc.className='tcard'; tc.id='totCard';
+  tc.innerHTML='<div class="thdr">Weekly Breakdown</div><div id="totBody"></div>';
+  ct.appendChild(tc);
+  updTotals();
+}
+
+function mkSec(ct,title,cls,chores,sub) {
+  const sec=document.createElement('div'); sec.className='sec '+cls;
+  sec.innerHTML='<div class="sec-hdr">'+title+' <span>'+sub+'</span></div>';
+  const lst=document.createElement('div'); lst.className='clist';
+  chores.forEach(function(ch) {
+    const item=document.createElement('div'); item.className='citem';
+    item.innerHTML='<div class="cinfo"><div class="cname">'+ch.name+'</div>'+(ch.note?'<div class="cnote">'+ch.note+'</div>':'')+'</div><div class="cpts">+'+ch.pts+'</div><button class="cchk" onclick="tog(''+ch.id+'','+ch.pts+')" aria-label="Mark done"><div class="circ" id="circ-'+ch.id+'"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg></div></button>';
+    lst.appendChild(item);
+  });
+  sec.appendChild(lst); ct.appendChild(sec);
+}
+
+function selDay(i) {
+  activeDay=i;
+  DAYS.forEach(function(_,j) {
+    const el=document.getElementById('dc-'+j);
+    if(el) el.className='daychip'+(j===i?' sel':'');
+  });
+  refreshAll();
+}
+
+function refreshAll() {
+  ALL.forEach(function(ch) {
+    const el=document.getElementById('circ-'+ch.id);
+    if(el) el.className='circ'+((state.chores[ch.id]||[])[activeDay]?' ok':'');
+  });
+  const p=state.penalty||0;
+  const pn=document.getElementById('penNum'); if(pn) pn.textContent=p;
+  const pt=document.getElementById('penTot'); if(pt) pt.textContent='-'+(p*15)+' pts';
+  updTotals();
+}
+
+function tog(id,pts) {
+  if(!state.chores[id]) state.chores[id]=[0,0,0,0,0,0,0];
+  state.chores[id][activeDay] = state.chores[id][activeDay] ? 0 : 1;
+  const done=state.chores[id][activeDay];
+  const el=document.getElementById('circ-'+id);
+  if(el) el.className='circ'+(done?' ok':'');
+  toast(done?'+'+pts+' pts earned!':'Chore unchecked');
+  updTotals(); scheduleSave();
+}
+
+function chgPen(delta) {
+  state.penalty=Math.max(0,(state.penalty||0)+delta);
+  const p=state.penalty;
+  const pn=document.getElementById('penNum'); if(pn) pn.textContent=p;
+  const pt=document.getElementById('penTot'); if(pt) pt.textContent='-'+(p*15)+' pts';
+  if(delta>0) toast('-15 pts penalty applied');
+  updTotals(); scheduleSave();
+}
+
+function calcScore() {
+  let t=0;
+  ALL.forEach(function(ch){ (state.chores[ch.id]||[]).forEach(function(v){if(v)t+=ch.pts;}); });
+  t-=(state.penalty||0)*15;
+  return t;
+}
+
+function updTotals() {
+  const score=calcScore();
+  const sv=document.getElementById('scVal'); if(sv) sv.textContent=score+' pts';
+  const sf=document.getElementById('scFill'); if(sf) sf.style.width=Math.min(100,Math.max(0,score/3000*100))+'%';
+  const body=document.getElementById('totBody'); if(!body) return;
+  const secs=[
+    {label:'Daily Chores',chores:DAILY},
+    {label:'Specialty Chores',chores:SPEC},
+    {label:'Weekly Chores',chores:WEEKLY},
+    {label:'DoorDash/Uber',chores:DASH},
+  ];
+  let rows=''; let grand=0;
+  secs.forEach(function(sec) {
+    let sub=0;
+    sec.chores.forEach(function(ch){ (state.chores[ch.id]||[]).forEach(function(v){if(v)sub+=ch.pts;}); });
+    grand+=sub;
+    if(sub>0) rows+='<div class="trow"><span>'+sec.label+'</span><span class="tp">+'+sub+'</span></div>';
+  });
+  const pen=(state.penalty||0)*15; grand-=pen;
+  if(pen>0) rows+='<div class="trow"><span>Penalties</span><span class="tn">-'+pen+'</span></div>';
+  rows+='<div class="trow"><span>Total This Week</span><span class="'+(grand>=0?'tp':'tn')+'">'+grand+' pts</span></div>';
+  body.innerHTML=rows;
+}
+
+function confirmReset() {
+  if(confirm('Reset all chores for this week?')) {
+    ALL.forEach(function(ch){ state.chores[ch.id]=[0,0,0,0,0,0,0]; });
+    state.penalty=0;
+    refreshAll(); scheduleSave(); toast('Chart reset');
+  }
+}
+
+var tTimer;
+function toast(msg) {
+  var t=document.getElementById('toast');
+  t.textContent=msg; t.classList.add('show');
+  clearTimeout(tTimer); tTimer=setTimeout(function(){t.classList.remove('show');},1800);
+}
+
+(function() {
+  var btn=document.getElementById('themeBtn');
+  var html=document.documentElement;
+  var dark=window.matchMedia('(prefers-color-scheme: dark)').matches;
+  html.setAttribute('data-theme',dark?'dark':'light');
+  btn.innerHTML=dark?'&#9728;&#65039;':'&#127769;';
+  btn.addEventListener('click',function(){
+    dark=!dark; html.setAttribute('data-theme',dark?'dark':'light');
+    btn.innerHTML=dark?'&#9728;&#65039;':'&#127769;';
+  });
+})();
+
+checkSetup();
+</script>
+</body>
+</html>
