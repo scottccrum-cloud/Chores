@@ -296,7 +296,7 @@ function renderDay(dayIdx){
 
 function toggleChore(day,choreId,pts,newVal){
   db.ref("chores/"+KID+"/"+wk+"/"+day+"/"+choreId).set(newVal||null);
-  showToast(newVal?"+"pts+" pts earned! 🎉":"Unchecked");
+  showToast(newVal?`+${pts} pts earned! 🎉`:"Unchecked");
 }
 
 function changePenalty(delta){
