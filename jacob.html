@@ -9,157 +9,428 @@
 <title>Jacob's Chore Chart</title>
 <link href="https://api.fontshare.com/v2/css?f[]=satoshi@400,500,700&display=swap" rel="stylesheet">
 <style>
+/* --- Global Styles & Theme Variables --- */
+:root {
+  --font: 'Satoshi', -apple-system, sans-serif;
+  --bg: #121824;         /* Deep space dark background */
+  --sur: #1e2640;        /* Card backgrounds */
+  --sur2: #171e30;       /* Inside item backgrounds */
+  --brd: #2d3748;        /* Clean borders */
+  --div: rgba(255, 255, 255, 0.08);
+  --tx: #f3f4f6;         /* Crisp off-white text */
+  --txm: #9ca3af;        /* Soft gray secondary text */
+  
+  /* Vibrant Neon Accents */
+  --pri: #10b981;        /* Jacob's custom theme: Neon Green for daily chores */
+  --sph: #3b82f6;        /* Tech blue for specialty */
+  --wkh: #a855f7;        /* Purple for weekly */
+  --dbh: #f59e0b;        /* Amber for DoorDash/Uber */
+  --red: #ef4444;        /* Bright red for penalties */
+  --pur: #ec4899;        /* Pink/Purple for rewards */
+  --mon: #06b6d4;        /* Cyan for monetary rewards */
+}
 
-:root{
-  --font:'Satoshi',-apple-system,sans-serif;
-  --tx-xs:.75rem;--tx-sm:.9rem;--tx-base:1rem;--tx-lg:1.2rem;--tx-xl:1.6rem;
-  --sp1:.25rem;--sp2:.5rem;--sp3:.75rem;--sp4:1rem;--sp5:1.25rem;--sp6:1.5rem;
-  --r-sm:.375rem;--r-md:.5rem;--r-lg:.75rem;--r-xl:1rem;--r-full:9999px;
-  --tr:180ms cubic-bezier(.16,1,.3,1);
-  --sh:0 1px 3px rgba(0,0,0,.07),0 1px 2px rgba(0,0,0,.05);
-  --sh-md:0 4px 12px rgba(0,0,0,.09);
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+body {
+  font-family: var(--font);
+  background: var(--bg);
+  color: var(--tx);
+  min-height: 100dvh;
+  padding-bottom: 80px;
 }
-[data-theme=light]{
-  --bg:#f6f5f1;--sur:#fff;--sur2:#f4f3ef;--brd:rgba(0,0,0,.1);--div:rgba(0,0,0,.07);
-  --tx:#1a1a18;--txm:#6b6a67;--txf:#aaa9a5;
-  --pri:#1a6ea8;--prl:#ddeeff;
-  --grn:#196B24;--grl:#e2f0d9;
-  --orn:#9E480E;--orl:#fce5d4;
-  --red:#C00000;--rdl:#ffd7d7;
-  --pur:#5C2D91;--pul:#e9d5ff;
-  --sph:#375623;--spl:#e2efda;
-  --wkh:#7F6000;--wkl:#fff2cc;
-  --dbh:#833C00;--dbl:#fce4d6;
-  --mon:#4A4000;--mol:#fff9c4;
-  --gld:#d4a820;--gll:#fff2cc;
-}
-[data-theme=dark]{
-  --bg:#141413;--sur:#1c1b19;--sur2:#222120;--brd:rgba(255,255,255,.1);--div:rgba(255,255,255,.06);
-  --tx:#e0dfdc;--txm:#8a8986;--txf:#555450;
-  --pri:#4f98c8;--prl:#1a3650;
-  --grn:#4fa347;--grl:#1a3520;
-  --orn:#c97040;--orl:#3a1f0a;
-  --red:#e05555;--rdl:#3a1010;
-  --pur:#9b5cd4;--pul:#2a1850;
-  --sph:#6daa45;--spl:#1a3010;
-  --wkh:#d4a820;--wkl:#3a3210;
-  --dbh:#c97040;--dbl:#3a1a0a;
-  --mon:#c4a830;--mol:#3a3010;
-  --gld:#d4a820;--gll:#3a3210;
-}
-*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
-html{-webkit-text-size-adjust:none;scroll-behavior:smooth}
-body{font-family:var(--font);font-size:var(--tx-base);background:var(--bg);color:var(--tx);min-height:100dvh;padding-bottom:calc(var(--sp6) + env(safe-area-inset-bottom));-webkit-tap-highlight-color:transparent}
-button{cursor:pointer;font:inherit;border:none;background:none;color:inherit}
-input,select{font:inherit}
-/* header */
-.hdr{position:sticky;top:0;z-index:100;background:var(--sur);border-bottom:1px solid var(--div);padding:var(--sp3) var(--sp4);display:flex;align-items:center;justify-content:space-between;box-shadow:var(--sh)}
-.hdr-l{display:flex;flex-direction:column;gap:2px}
-.hdr-title{font-size:var(--tx-lg);font-weight:700}
-.hdr-sub{font-size:var(--tx-xs);color:var(--txm)}
-.hdr-r{display:flex;align-items:center;gap:var(--sp2)}
-.icon-btn{width:40px;height:40px;border-radius:var(--r-full);display:flex;align-items:center;justify-content:center;background:var(--sur2);border:1px solid var(--brd);font-size:1.1rem;transition:background var(--tr)}
-.icon-btn:active{transform:scale(.93)}
-/* week row */
-.week-row{display:flex;align-items:center;gap:var(--sp3);padding:var(--sp2) var(--sp4);background:var(--sur);border-bottom:1px solid var(--div)}
-.week-lbl{font-size:var(--tx-xs);color:var(--txm);white-space:nowrap}
-.week-inp{flex:1;font-size:var(--tx-sm);padding:var(--sp2) var(--sp3);border:1px solid var(--brd);border-radius:var(--r-md);background:var(--sur2);color:var(--tx)}
-.week-inp:focus{outline:2px solid var(--pri);outline-offset:2px}
-/* content */
-.content{padding:var(--sp4);display:flex;flex-direction:column;gap:var(--sp5)}
-/* day strip */
-.day-strip{display:flex;gap:var(--sp2);overflow-x:auto;scrollbar-width:none;padding-bottom:4px}
-.day-strip::-webkit-scrollbar{display:none}
-.daychip{flex-shrink:0;min-width:46px;padding:var(--sp2);border-radius:var(--r-md);font-size:var(--tx-xs);font-weight:700;text-align:center;border:2px solid var(--brd);background:var(--sur2);color:var(--txm);transition:all var(--tr)}
-/* section */
-.sec{border-radius:var(--r-xl);overflow:hidden;box-shadow:var(--sh)}
-.sec-hdr{padding:var(--sp3) var(--sp4);font-weight:700;font-size:var(--tx-sm);display:flex;align-items:center;justify-content:space-between;color:#fff}
-.sec-hdr span{opacity:.8;font-size:var(--tx-xs);font-weight:500}
-.s-daily .sec-hdr{background:var(--pri)}
-.s-spec  .sec-hdr{background:var(--sph)}
-.s-week  .sec-hdr{background:var(--wkh)}
-.s-dash  .sec-hdr{background:var(--dbh)}
-.s-pen   .sec-hdr{background:var(--red)}
-.s-rew   .sec-hdr{background:var(--pur)}
-.s-mon   .sec-hdr{background:var(--mon)}
-/* chore item */
-.clist{background:var(--sur)}
-.citem{display:flex;align-items:stretch;border-bottom:1px solid var(--div);min-height:58px}
-.citem:last-child{border-bottom:none}
-.cinfo{flex:1;padding:var(--sp3);display:flex;flex-direction:column;justify-content:center;gap:2px}
-.cname{font-size:var(--tx-sm);font-weight:500;line-height:1.3}
-.cnote{font-size:var(--tx-xs);color:var(--txm)}
-.cpts{display:flex;align-items:center;justify-content:center;min-width:50px;padding:0 var(--sp2);font-weight:700;font-size:var(--tx-sm);border-left:1px solid var(--div);color:var(--sph)}
-.cpts.neg{color:var(--red)}
-.cchk{display:flex;align-items:center;justify-content:center;width:58px;min-height:58px;border-left:1px solid var(--div)}
-.circ{width:34px;height:34px;border-radius:var(--r-full);border:2.5px solid var(--brd);display:flex;align-items:center;justify-content:center;transition:all var(--tr);background:var(--sur2)}
-.circ.ok{background:var(--sph);border-color:var(--sph)}
-.circ svg{opacity:0;transition:opacity var(--tr)}
-.circ.ok svg{opacity:1}
-.cchk:active .circ{transform:scale(.85)}
-/* penalty */
-.pen-item{display:flex;align-items:center;gap:var(--sp3);padding:var(--sp3) var(--sp4);background:var(--sur);flex-wrap:wrap}
-.pen-lbl{flex:1;font-size:var(--tx-sm);font-weight:500;min-width:140px}
-.pen-ctrl{display:flex;align-items:center;gap:var(--sp3)}
-.pen-btn{width:40px;height:40px;border-radius:var(--r-full);font-size:1.3rem;font-weight:700;display:flex;align-items:center;justify-content:center;border:2px solid var(--brd);background:var(--sur2);transition:all var(--tr)}
-.pen-btn.m{border-color:var(--red);color:var(--red)}
-.pen-btn.p{border-color:var(--sph);color:var(--sph)}
-.pen-btn:active{transform:scale(.88)}
-.pen-num{font-size:var(--tx-xl);font-weight:700;color:var(--red);min-width:36px;text-align:center}
-.pen-tot{font-size:var(--tx-sm);color:var(--red);font-weight:700}
-/* rewards */
-.rew-item{display:flex;align-items:center;gap:var(--sp3);padding:var(--sp3) var(--sp4);border-bottom:1px solid var(--div);background:var(--sur)}
-.rew-item:last-child{border-bottom:none}
-.rew-icon{font-size:1.4rem}
-.rew-info{flex:1}
-.rew-name{font-size:var(--tx-sm);font-weight:600}
-.rew-detail{font-size:var(--tx-xs);color:var(--txm)}
-.rew-pts{font-size:var(--tx-sm);font-weight:700;color:var(--pur)}
-/* monetary */
-.mgrid{background:var(--sur);display:grid;grid-template-columns:1fr 1fr}
-.mcell{padding:var(--sp3) var(--sp4);border-bottom:1px solid var(--div);display:flex;flex-direction:column;gap:2px}
-.mcell:nth-child(odd){border-right:1px solid var(--div)}
-.mrange{font-size:var(--tx-xs);color:var(--txm)}
-.mval{font-size:var(--tx-lg);font-weight:700;color:var(--sph)}
-/* totals card */
-.tcard{background:var(--sur);border-radius:var(--r-xl);padding:var(--sp4);box-shadow:var(--sh)}
-.thdr{font-size:var(--tx-xs);font-weight:700;text-transform:uppercase;letter-spacing:.05em;color:var(--txm);margin-bottom:var(--sp3)}
-.trow{display:flex;justify-content:space-between;align-items:center;padding:var(--sp2) 0;border-bottom:1px solid var(--div);font-size:var(--tx-sm)}
-.trow:last-child{border-bottom:none;font-weight:700;font-size:var(--tx-base)}
-.tp{color:var(--sph);font-weight:600}.tn{color:var(--red);font-weight:600}
-/* score bar */
-.score-bar{position:sticky;bottom:0;z-index:90;background:var(--sur);border-top:1px solid var(--div);padding:var(--sp3) var(--sp4);padding-bottom:calc(var(--sp3) + env(safe-area-inset-bottom));box-shadow:0 -4px 16px rgba(0,0,0,.07);display:flex;align-items:center;gap:var(--sp4)}
-.sc-disp{display:flex;flex-direction:column;gap:2px;flex:1}
-.sc-lbl{font-size:var(--tx-xs);color:var(--txm)}
-.sc-val{font-size:var(--tx-xl);font-weight:700;line-height:1}
-.sc-bar{flex:2;height:8px;border-radius:var(--r-full);background:var(--sur2);overflow:hidden}
-.sc-fill{height:100%;border-radius:var(--r-full);transition:width .4s ease}
-.rst-btn{padding:var(--sp2) var(--sp4);border-radius:var(--r-lg);background:var(--sur2);border:1px solid var(--brd);font-size:var(--tx-xs);font-weight:600;color:var(--txm);transition:all var(--tr)}
-.rst-btn:active{transform:scale(.95)}
-/* sync status */
-.sync-dot{width:8px;height:8px;border-radius:50%;background:var(--txf);display:inline-block;margin-right:4px;transition:background .3s}
-.sync-dot.ok{background:#22c55e}
-.sync-dot.err{background:var(--red)}
-.sync-dot.busy{background:var(--gld);animation:pulse .8s infinite}
-@keyframes pulse{0%,100%{opacity:1}50%{opacity:.4}}
-/* toast */
-.toast{position:fixed;bottom:90px;left:50%;transform:translateX(-50%) translateY(10px);background:#1a1a18;color:#fff;font-size:var(--tx-sm);font-weight:500;padding:var(--sp2) var(--sp5);border-radius:var(--r-full);box-shadow:var(--sh-md);opacity:0;pointer-events:none;transition:opacity .25s,transform .25s;white-space:nowrap;z-index:200}
-.toast.show{opacity:1;transform:translateX(-50%) translateY(0)}
-/* setup modal */
-.modal-bg{position:fixed;inset:0;background:rgba(0,0,0,.6);z-index:500;display:flex;align-items:center;justify-content:center;padding:var(--sp4)}
-.modal{background:var(--sur);border-radius:var(--r-xl);padding:var(--sp6);width:100%;max-width:400px;box-shadow:var(--sh-md)}
-.modal h2{font-size:var(--tx-lg);font-weight:700;margin-bottom:var(--sp2)}
-.modal p{font-size:var(--tx-sm);color:var(--txm);margin-bottom:var(--sp5);line-height:1.5}
-.modal label{font-size:var(--tx-sm);font-weight:600;display:block;margin-bottom:var(--sp2)}
-.modal input{width:100%;padding:var(--sp3) var(--sp4);border:1px solid var(--brd);border-radius:var(--r-md);background:var(--sur2);color:var(--tx);font-size:var(--tx-base);margin-bottom:var(--sp4)}
-.modal input:focus{outline:2px solid var(--pri);outline-offset:2px}
-.btn-primary{width:100%;padding:var(--sp3) var(--sp4);border-radius:var(--r-lg);background:var(--pri);color:#fff;font-weight:700;font-size:var(--tx-base);transition:all var(--tr)}
-.btn-primary:active{transform:scale(.97)}
-.btn-danger{background:var(--red)}
 
-.daychip.sel{border-color:#1a6ea8;color:#1a6ea8;background:#ddeeff}
-.sc-val{color:#1a6ea8}
-.sc-fill{background:#1a6ea8}
+/* --- Header --- */
+.hdr {
+  position: sticky;
+  top: 0;
+  z-index: 100;
+  background: var(--sur);
+  border-bottom: 1px solid var(--brd);
+  padding: 15px 20px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+.hdr-title {
+  font-size: 1.4rem;
+  font-weight: 800;
+  background: linear-gradient(45deg, #10b981, #3b82f6);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  text-transform: uppercase;
+}
+.hdr-sub { font-size: 0.8rem; color: var(--txm); }
+
+/* --- Day Selector Strip --- */
+.week-row { display: none; }
+.day-strip {
+  display: flex;
+  gap: 10px;
+  padding: 15px 20px;
+  overflow-x: auto;
+}
+.daychip {
+  flex: 1;
+  min-width: 50px;
+  padding: 10px;
+  border-radius: 10px;
+  font-size: 0.85rem;
+  font-weight: 700;
+  background: var(--sur2);
+  border: 2px solid var(--brd);
+  color: var(--txm);
+  transition: all 0.2s ease;
+}
+.daychip.sel {
+  background: var(--pri);
+  border-color: var(--pri);
+  color: #fff;
+  transform: scale(1.05);
+}
+
+/* --- Content Sections & Cards --- */
+.content { padding: 0 20px; display: flex; flex-direction: column; gap: 20px; }
+.sec {
+  background: var(--sur);
+  border-radius: 16px;
+  overflow: hidden;
+  border: 1px solid var(--brd);
+  box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+}
+.sec-hdr {
+  padding: 12px 20px;
+  font-weight: 700;
+  font-size: 1rem;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  display: flex;
+  justify-content: space-between;
+  background: rgba(255,255,255,0.05);
+  border-bottom: 1px solid var(--brd);
+}
+.sec-hdr span { font-size: 0.75rem; opacity: 0.7; }
+
+/* Apply neon colors to section headings */
+.s-daily .sec-hdr { color: var(--pri); }
+.s-spec .sec-hdr { color: var(--sph); }
+.s-week .sec-hdr { color: var(--wkh); }
+.s-dash .sec-hdr { color: var(--dbh); }
+.s-pen .sec-hdr { color: var(--red); }
+.s-rew .sec-hdr { color: var(--pur); }
+.s-mon .sec-hdr { color: var(--mon); }
+
+/* --- Chore List Items --- */
+.citem, .pen-item, .rew-item, .mcell {
+  display: flex;
+  align-items: center;
+  padding: 15px 20px;
+  border-bottom: 1px solid var(--div);
+  background: var(--sur);
+}
+.citem:last-child { border-bottom: none; }
+.cinfo { flex: 1; }
+.cname { font-size: 1rem; font-weight: 500; }
+.cnote { font-size: 0.8rem; color: var(--txm); }
+.cpts { font-weight: 700; font-size: 1rem; margin-right: 15px; color: var(--pri); }
+
+/* --- Custom Checkbox Circles --- */
+.circ {
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  border: 2px solid var(--brd);
+  background: var(--sur2);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.2s ease;
+}
+.circ.ok {
+  background: var(--pri);
+  border-color: var(--pri);
+  box-shadow: 0 0 10px rgba(16, 185, 129, 0.4);
+}
+.circ svg { opacity: 0; }
+.circ.ok svg { opacity: 1; }
+
+/* --- Penalty Counter --- */
+.pen-ctrl { display: flex; align-items: center; gap: 15px; margin-left: auto; }
+.pen-btn {
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  background: var(--sur2);
+  border: 2px solid var(--brd);
+  font-size: 1.2rem;
+  font-weight: 700;
+}
+.pen-btn.p { color: var(--pri); border-color: var(--pri); }
+.pen-btn.m { color: var(--red); border-color: var(--red); }
+.pen-num { font-size: 1.4rem; font-weight: 700; color: var(--red); min-width: 25px; text-align: center; }
+.pen-tot { font-size: 1rem; color: var(--red); font-weight: 700; }
+
+/* --- Bottom Score Bar --- */
+.score-bar {
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  z-index: 200;
+  background: var(--sur);
+  border-top: 1px solid var(--brd);
+  padding: 15px 20px;
+  display: flex;
+  align-items: center;
+  gap: 20px;
+}
+.sc-disp { flex: 1; }
+.sc-lbl { font-size: 0.75rem; color: var(--txm); text-transform: uppercase; }
+.sc-val { font-size: 1.5rem; font-weight: 800; color: var(--pri); }
+.sc-bar { flex: 2; height: 10px; background: var(--sur2); border-radius: 5px; overflow: hidden; }
+.sc-fill { height: 100%; background: var(--pri); border-radius: 5px; box-shadow: 0 0 8px var(--pri); }
+.rst-btn {
+  padding: 8px 16px;
+  border-radius: 8px;
+  background: var(--sur2);
+  border: 1px solid var(--brd);
+  font-size: 0.8rem;
+  font-weight: 600;
+  color: var(--txm);
+}
+
+/* --- Toast Notification --- */
+.toast {
+  position: fixed;
+  bottom: 80px;
+  left: 50%;
+  transform: translateX(-50%);
+  background: #000;
+  border: 1px solid var(--pri);
+  padding: 10px 20px;
+  border-radius: 20px;
+  font-size: 0.9rem;
+  opacity: 0;
+  transition: opacity 0.2s;
+}
+.toast.show { opacity: 1; }
+</style>
+Scroll down, leave a commit message like "Updated Jacob's style theme to neon green", and click Commit changes.
+
+Step 2: Update mia.html
+Go to mia.html in your repository.
+
+Click the Pencil Icon to edit.
+
+Delete the old styling code block between the <style> tags.
+
+Paste the version below, which includes custom bright pink/purple styling rules (#ec4899) perfectly fitting Mia's dashboard profile from the selection screen:
+
+HTML
+<style>
+/* --- Global Styles & Theme Variables --- */
+:root {
+  --font: 'Satoshi', -apple-system, sans-serif;
+  --bg: #121824;         /* Deep space dark background */
+  --sur: #1e2640;        /* Card backgrounds */
+  --sur2: #171e30;       /* Inside item backgrounds */
+  --brd: #2d3748;        /* Clean borders */
+  --div: rgba(255, 255, 255, 0.08);
+  --tx: #f3f4f6;         /* Crisp off-white text */
+  --txm: #9ca3af;        /* Soft gray secondary text */
+  
+  /* Vibrant Neon Accents */
+  --pri: #ec4899;         /* Mia's custom theme: Neon Pink for daily chores */
+  --sph: #3b82f6;        /* Tech blue for specialty */
+  --wkh: #a855f7;        /* Purple for weekly */
+  --dbh: #f59e0b;        /* Amber for DoorDash/Uber */
+  --red: #ef4444;        /* Bright red for penalties */
+  --pur: #10b981;        /* Neon Green for rewards */
+  --mon: #06b6d4;        /* Cyan for monetary rewards */
+}
+
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+body {
+  font-family: var(--font);
+  background: var(--bg);
+  color: var(--tx);
+  min-height: 100dvh;
+  padding-bottom: 80px;
+}
+
+/* --- Header --- */
+.hdr {
+  position: sticky;
+  top: 0;
+  z-index: 100;
+  background: var(--sur);
+  border-bottom: 1px solid var(--brd);
+  padding: 15px 20px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+.hdr-title {
+  font-size: 1.4rem;
+  font-weight: 800;
+  background: linear-gradient(45deg, #ec4899, #a855f7);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  text-transform: uppercase;
+}
+.hdr-sub { font-size: 0.8rem; color: var(--txm); }
+
+/* --- Day Selector Strip --- */
+.week-row { display: none; }
+.day-strip {
+  display: flex;
+  gap: 10px;
+  padding: 15px 20px;
+  overflow-x: auto;
+}
+.daychip {
+  flex: 1;
+  min-width: 50px;
+  padding: 10px;
+  border-radius: 10px;
+  font-size: 0.85rem;
+  font-weight: 700;
+  background: var(--sur2);
+  border: 2px solid var(--brd);
+  color: var(--txm);
+  transition: all 0.2s ease;
+}
+.daychip.sel {
+  background: var(--pri);
+  border-color: var(--pri);
+  color: #fff;
+  transform: scale(1.05);
+}
+
+/* --- Content Sections & Cards --- */
+.content { padding: 0 20px; display: flex; flex-direction: column; gap: 20px; }
+.sec {
+  background: var(--sur);
+  border-radius: 16px;
+  overflow: hidden;
+  border: 1px solid var(--brd);
+  box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+}
+.sec-hdr {
+  padding: 12px 20px;
+  font-weight: 700;
+  font-size: 1rem;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  display: flex;
+  justify-content: space-between;
+  background: rgba(255,255,255,0.05);
+  border-bottom: 1px solid var(--brd);
+}
+.sec-hdr span { font-size: 0.75rem; opacity: 0.7; }
+
+/* Apply neon colors to section headings */
+.s-daily .sec-hdr { color: var(--pri); }
+.s-spec .sec-hdr { color: var(--sph); }
+.s-week .sec-hdr { color: var(--wkh); }
+.s-dash .sec-hdr { color: var(--dbh); }
+.s-pen .sec-hdr { color: var(--red); }
+.s-rew .sec-hdr { color: var(--pur); }
+.s-mon .sec-hdr { color: var(--mon); }
+
+/* --- Chore List Items --- */
+.citem, .pen-item, .rew-item, .mcell {
+  display: flex;
+  align-items: center;
+  padding: 15px 20px;
+  border-bottom: 1px solid var(--div);
+  background: var(--sur);
+}
+.citem:last-child { border-bottom: none; }
+.cinfo { flex: 1; }
+.cname { font-size: 1rem; font-weight: 500; }
+.cnote { font-size: 0.8rem; color: var(--txm); }
+.cpts { font-weight: 700; font-size: 1rem; margin-right: 15px; color: var(--pri); }
+
+/* --- Custom Checkbox Circles --- */
+.circ {
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  border: 2px solid var(--brd);
+  background: var(--sur2);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.2s ease;
+}
+.circ.ok {
+  background: var(--pri);
+  border-color: var(--pri);
+  box-shadow: 0 0 10px rgba(236, 72, 153, 0.4);
+}
+.circ svg { opacity: 0; }
+.circ.ok svg { opacity: 1; }
+
+/* --- Penalty Counter --- */
+.pen-ctrl { display: flex; align-items: center; gap: 15px; margin-left: auto; }
+.pen-btn {
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  background: var(--sur2);
+  border: 2px solid var(--brd);
+  font-size: 1.2rem;
+  font-weight: 700;
+}
+.pen-btn.p { color: var(--pri); border-color: var(--pri); }
+.pen-btn.m { color: var(--red); border-color: var(--red); }
+.pen-num { font-size: 1.4rem; font-weight: 700; color: var(--red); min-width: 25px; text-align: center; }
+.pen-tot { font-size: 1rem; color: var(--red); font-weight: 700; }
+
+/* --- Bottom Score Bar --- */
+.score-bar {
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  z-index: 200;
+  background: var(--sur);
+  border-top: 1px solid var(--brd);
+  padding: 15px 20px;
+  display: flex;
+  align-items: center;
+  gap: 20px;
+}
+.sc-disp { flex: 1; }
+.sc-lbl { font-size: 0.75rem; color: var(--txm); text-transform: uppercase; }
+.sc-val { font-size: 1.5rem; font-weight: 800; color: var(--pri); }
+.sc-bar { flex: 2; height: 10px; background: var(--sur2); border-radius: 5px; overflow: hidden; }
+.sc-fill { height: 100%; background: var(--pri); border-radius: 5px; box-shadow: 0 0 8px var(--pri); }
+.rst-btn {
+  padding: 8px 16px;
+  border-radius: 8px;
+  background: var(--sur2);
+  border: 1px solid var(--brd);
+  font-size: 0.8rem;
+  font-weight: 600;
+  color: var(--txm);
+}
+
+/* --- Toast Notification --- */
+.toast {
+  position: fixed;
+  bottom: 80px;
+  left: 50%;
+  transform: translateX(-50%);
+  background: #000;
+  border: 1px solid var(--pri);
+  padding: 10px 20px;
+  border-radius: 20px;
+  font-size: 0.9rem;
+  opacity: 0;
+  transition: opacity 0.2s;
+}
+.toast.show { opacity: 1; }
 </style>
 </head>
 <body>
