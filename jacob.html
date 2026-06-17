@@ -269,7 +269,7 @@
   <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/10.0.0/firebase-app.js";
     import { getAuth } from "https://www.gstatic.com/firebasejs/10.0.0/firebase-auth.js";
-    import { getDatabase } from "https://www.gstatic.com/firebasejs/10.0.0/firebase-database.js";
+    import { getDatabase, ref, set, onValue } from "https://www.gstatic.com/firebasejs/10.0.0/firebase-database.js";
 
     const firebaseConfig = {
       apiKey: "AIzaSyD1tuzNLZOcirHiWIORiD0lyvCnWQbdJMM",
@@ -282,8 +282,48 @@
     };
 
     const app = initializeApp(firebaseConfig);
-    const auth = getAuth(app);
     const db = getDatabase(app);
+
+    // --- Dynamic App Logic ---
+    const circles = document.querySelectorAll('.circ');
+    const dayChips = document.querySelectorAll('.daychip');
+    let currentDay = "Mon";
+
+    // Listen for Day Switches
+    dayChips.forEach(chip => {
+      chip.addEventListener('click', () => {
+        dayChips.forEach(c => c.classList.remove('sel'));
+        chip.classList.add('sel');
+        currentDay = chip.textContent;
+        loadDataForDay(currentDay);
+      });
+    });
+
+    // Handle Checking/Unchecking Chores
+    circles.forEach((circle, index) => {
+      circle.addEventListener('click', () => {
+        const isDone = circle.classList.toggle('ok');
+        // Save status straight to Jacob's slot in the cloud database!
+        set(ref(db, `jacob/days/${currentDay}/chore_${index}`), isDone);
+      });
+    });
+
+    // Load Data from Firebase Clubhouse automatically
+    function loadDataForDay(day) {
+      onValue(ref(db, `jacob/days/${day}`), (snapshot) => {
+        const data = snapshot.val() || {};
+        circles.forEach((circle, index) => {
+          if (data[`chore_${index}`] === true) {
+            circle.classList.add('ok');
+          } else {
+            circle.classList.remove('ok');
+          }
+        });
+      });
+    }
+
+    // Run setup on startup
+    loadDataForDay(currentDay);
   </script>
 
 </body>
